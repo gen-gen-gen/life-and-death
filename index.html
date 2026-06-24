@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atlas of lives — guess the celebrity</title>
+<title>Life and death — guess the celebrity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
@@ -264,7 +264,7 @@
 <body>
 <div class="sheet">
   <header>
-    <h1>Atlas of lives</h1>
+    <h1>Life and death</h1>
     <p class="tagline" id="tagline">Today's traveller — name them from where they began and ended.</p>
   </header>
   <div class="stat-row">
@@ -663,7 +663,7 @@ els.share.addEventListener('click',async()=>{
   const ok=state.lastResult==='correct';
   const hu=state.lastHintsUsed||0;
   const hintGlyphs='💡'.repeat(hu)+'·'.repeat(3-hu);
-  const text='Atlas of Lives #'+pNum+' '+(ok?'✓':'✗')+' '+hintGlyphs+(state.streak?(' · streak '+state.streak):'');
+  const text='Life and Death #'+pNum+' '+(ok?'✓':'✗')+' '+hintGlyphs+(state.streak?(' · streak '+state.streak):'');
   try{
     if(navigator.share){
       await navigator.share({text});
