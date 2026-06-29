@@ -6,7 +6,7 @@
 <title>Life and death — guess the celebrity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F1E6CB;
@@ -16,15 +16,16 @@
     --green:#3F6B4A;
     --red:#9C3B33;
     --line:#C9B98B;
+    --backdrop:#0B1626;
   }
   *{ box-sizing:border-box; }
   body{
     margin:0;
     min-height:100vh;
-    background:var(--paper-deep);
+    background:var(--backdrop);
     background-image:
-      radial-gradient(circle at 18% 16%, rgba(255,255,255,0.3), transparent 60%),
-      radial-gradient(circle at 82% 84%, rgba(0,0,0,0.07), transparent 60%);
+      radial-gradient(circle at 18% 16%, rgba(255,255,255,0.08), transparent 60%),
+      radial-gradient(circle at 82% 84%, rgba(0,0,0,0.3), transparent 60%);
     font-family:'Lora', serif;
     color:var(--ink);
     display:flex;
@@ -62,7 +63,7 @@
   }
   .stat-row{
     display:flex; justify-content:space-between; align-items:center; gap:12px;
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:12px;
     color:var(--ink-soft);
     border-top:1px dashed var(--line);
@@ -97,7 +98,7 @@
   .zoom-controls button{ padding:4px 16px; }
   .legend{
     display:flex; gap:20px; justify-content:center;
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:11px;
     color:var(--ink-soft);
     margin:-6px 0 18px;
@@ -113,7 +114,7 @@
     margin:0 0 14px;
   }
   .hints-label{
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:10px;
     color:var(--ink-soft);
     text-transform:uppercase;
@@ -169,7 +170,7 @@
   input[type=text]:focus{ border-bottom-color:var(--ink); }
   input[type=text]:disabled{ opacity:0.5; }
   button{
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:12px;
     letter-spacing:0.5px;
     padding:0 18px;
@@ -212,7 +213,7 @@
     border:3px double currentColor;
     display:flex; align-items:center; justify-content:center;
     text-align:center;
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:13px;
     text-transform:uppercase;
     transform:rotate(-10deg);
@@ -235,7 +236,7 @@
     line-height:1.6;
   }
   .countdown{
-    font-family:'Special Elite', monospace;
+    font-family:'Lora', serif;
     font-size:12px;
     color:var(--ink-soft);
     margin:14px 0 0;
@@ -287,7 +288,7 @@
         <g id="death-mark"><g class="marker-inner"></g></g>
         <g id="combined-mark" style="display:none"><g class="marker-inner"></g></g>
       </g>
-      <text id="loading-text" x="340" y="210" text-anchor="middle" font-family="'Special Elite', monospace" font-size="13" fill="var(--ink-soft)">Unrolling the map…</text>
+      <text id="loading-text" x="340" y="210" text-anchor="middle" font-family="'Lora', serif" font-size="13" fill="var(--ink-soft)">Unrolling the map…</text>
     </svg>
   </div>
   <p class="map-hint">Scroll or pinch to zoom, drag to pan</p>
@@ -356,12 +357,97 @@ const celebs=[
 {name:"Steve Jobs",aliases:["steve jobs","jobs"],by:1955,bp:[37.77,-122.42,"San Francisco, USA"],dy:2011,dp:[37.44,-122.14,"Palo Alto, USA"],occupation:"Tech entrepreneur",death:"Pancreatic cancer"},
 {name:"Freddie Mercury",aliases:["freddie mercury","freddie","mercury"],by:1946,bp:[-6.16,39.2,"Zanzibar, Tanzania"],dy:1991,dp:[51.51,-0.13,"London, UK"],occupation:"Singer and songwriter",death:"AIDS-related pneumonia"},
 {name:"Leonardo da Vinci",aliases:["leonardo da vinci","leonardo","da vinci","davinci"],by:1452,bp:[43.78,10.92,"Vinci, Italy"],dy:1519,dp:[47.41,0.98,"Amboise, France"],occupation:"Polymath — painter, inventor, scientist",death:"Natural causes (likely stroke)"},
-{name:"Charlie Chaplin",aliases:["charlie chaplin","chaplin"],by:1889,bp:[51.51,-0.13,"London, UK"],dy:1977,dp:[46.46,6.84,"Vevey, Switzerland"],occupation:"Film actor and director",death:"Stroke in his sleep"}
+{name:"Charlie Chaplin",aliases:["charlie chaplin","chaplin"],by:1889,bp:[51.51,-0.13,"London, UK"],dy:1977,dp:[46.46,6.84,"Vevey, Switzerland"],occupation:"Film actor and director",death:"Stroke in his sleep"},
+{name:"Isaac Newton",aliases:["isaac newton","newton"],by:1643,bp:[52.81,-0.63,"Woolsthorpe, England"],dy:1727,dp:[51.51,-0.13,"London, UK"],occupation:"Physicist and mathematician",death:"Natural causes in old age"},
+{name:"Charles Darwin",aliases:["charles darwin","darwin"],by:1809,bp:[52.71,-2.75,"Shrewsbury, UK"],dy:1882,dp:[51.33,0.05,"Downe, UK"],occupation:"Naturalist and biologist",death:"Heart failure"},
+{name:"Galileo Galilei",aliases:["galileo","galileo galilei"],by:1564,bp:[43.72,10.40,"Pisa, Italy"],dy:1642,dp:[43.75,11.25,"Arcetri, Italy"],occupation:"Astronomer and physicist",death:"Fever, under house arrest"},
+{name:"Nikola Tesla",aliases:["tesla","nikola tesla"],by:1856,bp:[44.62,15.32,"Smiljan, Croatia"],dy:1943,dp:[40.71,-74.01,"New York City, USA"],occupation:"Inventor and electrical engineer",death:"Heart failure, alone in a hotel"},
+{name:"Thomas Edison",aliases:["edison","thomas edison"],by:1847,bp:[41.30,-82.60,"Milan, Ohio, USA"],dy:1931,dp:[40.79,-74.24,"West Orange, USA"],occupation:"Inventor and businessman",death:"Complications of diabetes"},
+{name:"Louis Pasteur",aliases:["louis pasteur","pasteur"],by:1822,bp:[47.10,5.49,"Dole, France"],dy:1895,dp:[48.83,2.16,"Marnes-la-Coquette, France"],occupation:"Microbiologist and chemist",death:"Stroke"},
+{name:"Carl Sagan",aliases:["carl sagan","sagan"],by:1934,bp:[40.65,-73.95,"Brooklyn, USA"],dy:1996,dp:[47.61,-122.33,"Seattle, USA"],occupation:"Astronomer and science communicator",death:"Pneumonia, from myelodysplasia"},
+{name:"Stephen Hawking",aliases:["stephen hawking","hawking"],by:1942,bp:[51.75,-1.26,"Oxford, UK"],dy:2018,dp:[52.20,0.12,"Cambridge, UK"],occupation:"Theoretical physicist",death:"ALS-related complications"},
+{name:"Alan Turing",aliases:["alan turing","turing"],by:1912,bp:[51.51,-0.13,"London, UK"],dy:1954,dp:[53.33,-2.24,"Wilmslow, UK"],occupation:"Mathematician and codebreaker",death:"Cyanide poisoning (ruled suicide)"},
+{name:"Ada Lovelace",aliases:["ada lovelace","lovelace"],by:1815,bp:[51.51,-0.13,"London, UK"],dy:1852,dp:[51.51,-0.13,"London, UK"],occupation:"Mathematician, early programmer",death:"Uterine cancer"},
+{name:"Nicolaus Copernicus",aliases:["copernicus","nicolaus copernicus"],by:1473,bp:[53.01,18.61,"Toruń, Poland"],dy:1543,dp:[54.36,19.68,"Frombork, Poland"],occupation:"Astronomer",death:"Stroke"},
+{name:"Sigmund Freud",aliases:["freud","sigmund freud"],by:1856,bp:[49.64,18.14,"Příbor, Czechia"],dy:1939,dp:[51.51,-0.13,"London, UK"],occupation:"Neurologist, founder of psychoanalysis",death:"Assisted suicide due to oral cancer"},
+{name:"Winston Churchill",aliases:["churchill","winston churchill"],by:1874,bp:[51.84,-1.36,"Blenheim Palace, UK"],dy:1965,dp:[51.51,-0.13,"London, UK"],occupation:"Prime Minister of the UK",death:"Stroke"},
+{name:"Mao Zedong",aliases:["mao zedong","mao","chairman mao"],by:1893,bp:[27.92,112.53,"Shaoshan, China"],dy:1976,dp:[39.90,116.41,"Beijing, China"],occupation:"Chinese revolutionary and leader",death:"ALS and heart attacks"},
+{name:"John F. Kennedy",aliases:["jfk","john f kennedy","john kennedy","kennedy"],by:1917,bp:[42.33,-71.12,"Brookline, USA"],dy:1963,dp:[32.78,-96.80,"Dallas, USA"],occupation:"US President",death:"Assassination — shot"},
+{name:"Nelson Mandela",aliases:["mandela","nelson mandela"],by:1918,bp:[-31.95,28.49,"Mvezo, South Africa"],dy:2013,dp:[-26.20,28.05,"Johannesburg, South Africa"],occupation:"Anti-apartheid leader and president",death:"Respiratory infection"},
+{name:"George Washington",aliases:["george washington","washington"],by:1732,bp:[38.10,-76.85,"Westmoreland County, USA"],dy:1799,dp:[38.71,-77.09,"Mount Vernon, USA"],occupation:"General and first US President",death:"Throat infection (and bloodletting)"},
+{name:"Margaret Thatcher",aliases:["margaret thatcher","thatcher"],by:1925,bp:[52.91,-0.64,"Grantham, UK"],dy:2013,dp:[51.51,-0.13,"London, UK"],occupation:"Prime Minister of the UK",death:"Stroke"},
+{name:"Martin Luther King Jr.",aliases:["martin luther king","mlk","martin luther king jr"],by:1929,bp:[33.75,-84.39,"Atlanta, USA"],dy:1968,dp:[35.15,-90.05,"Memphis, USA"],occupation:"Civil rights leader",death:"Assassination — shot"},
+{name:"Malcolm X",aliases:["malcolm x","malcolm"],by:1925,bp:[41.26,-95.93,"Omaha, USA"],dy:1965,dp:[40.71,-74.01,"New York City, USA"],occupation:"Civil rights activist and minister",death:"Assassination — shot"},
+{name:"Che Guevara",aliases:["che guevara","che","ernesto guevara"],by:1928,bp:[-32.95,-60.65,"Rosario, Argentina"],dy:1967,dp:[-20.10,-64.32,"La Higuera, Bolivia"],occupation:"Revolutionary",death:"Executed by Bolivian army"},
+{name:"Fidel Castro",aliases:["fidel castro","castro","fidel"],by:1926,bp:[20.83,-75.81,"Birán, Cuba"],dy:2016,dp:[23.13,-82.38,"Havana, Cuba"],occupation:"Cuban revolutionary and leader",death:"Natural causes in old age"},
+{name:"Eva Perón",aliases:["eva peron","evita","eva peron","maria eva duarte"],by:1919,bp:[-35.00,-61.04,"Los Toldos, Argentina"],dy:1952,dp:[-34.61,-58.38,"Buenos Aires, Argentina"],occupation:"First Lady of Argentina, activist",death:"Cervical cancer"},
+{name:"Queen Victoria",aliases:["queen victoria","victoria"],by:1819,bp:[51.51,-0.13,"London, UK"],dy:1901,dp:[50.76,-1.30,"Isle of Wight, UK"],occupation:"Queen of the United Kingdom",death:"Natural causes in old age"},
+{name:"Simón Bolívar",aliases:["simon bolivar","bolivar","el libertador"],by:1783,bp:[10.48,-66.91,"Caracas, Venezuela"],dy:1830,dp:[11.24,-74.20,"Santa Marta, Colombia"],occupation:"Revolutionary, liberator of S. America",death:"Tuberculosis"},
+{name:"William Shakespeare",aliases:["shakespeare","william shakespeare"],by:1564,bp:[52.19,-1.71,"Stratford-upon-Avon, UK"],dy:1616,dp:[52.19,-1.71,"Stratford-upon-Avon, UK"],occupation:"Playwright and poet",death:"Cause unknown (possibly fever)"},
+{name:"Jane Austen",aliases:["jane austen","austen"],by:1775,bp:[51.24,-1.25,"Steventon, UK"],dy:1817,dp:[51.06,-1.31,"Winchester, UK"],occupation:"Novelist",death:"Likely Addison's disease"},
+{name:"Mark Twain",aliases:["mark twain","twain","samuel clemens"],by:1835,bp:[39.49,-91.79,"Florida, Missouri, USA"],dy:1910,dp:[41.31,-73.39,"Redding, Connecticut, USA"],occupation:"Author and humorist",death:"Heart attack"},
+{name:"Ernest Hemingway",aliases:["hemingway","ernest hemingway"],by:1899,bp:[41.89,-87.79,"Oak Park, Illinois, USA"],dy:1961,dp:[43.68,-114.36,"Ketchum, Idaho, USA"],occupation:"Novelist and journalist",death:"Self-inflicted gunshot"},
+{name:"Virginia Woolf",aliases:["virginia woolf","woolf"],by:1882,bp:[51.51,-0.13,"London, UK"],dy:1941,dp:[50.87,0.01,"Lewes, UK"],occupation:"Novelist and essayist",death:"Suicide by drowning"},
+{name:"Edgar Allan Poe",aliases:["edgar allan poe","poe","edgar poe"],by:1809,bp:[42.36,-71.06,"Boston, USA"],dy:1849,dp:[39.29,-76.62,"Baltimore, USA"],occupation:"Poet and short-story writer",death:"Mysterious illness"},
+{name:"Charles Dickens",aliases:["dickens","charles dickens"],by:1812,bp:[50.82,-1.09,"Portsmouth, UK"],dy:1870,dp:[51.42,0.46,"Higham, Kent, UK"],occupation:"Novelist",death:"Stroke"},
+{name:"Leo Tolstoy",aliases:["tolstoy","leo tolstoy","lev tolstoy"],by:1828,bp:[54.07,37.52,"Yasnaya Polyana, Russia"],dy:1910,dp:[53.45,39.84,"Astapovo, Russia"],occupation:"Novelist",death:"Pneumonia"},
+{name:"Franz Kafka",aliases:["kafka","franz kafka"],by:1883,bp:[50.08,14.43,"Prague, Czechia"],dy:1924,dp:[48.32,16.32,"Kierling, Austria"],occupation:"Novelist",death:"Tuberculosis"},
+{name:"Agatha Christie",aliases:["agatha christie","christie"],by:1890,bp:[50.46,-3.53,"Torquay, UK"],dy:1976,dp:[51.60,-1.12,"Wallingford, UK"],occupation:"Mystery novelist",death:"Natural causes in old age"},
+{name:"Oscar Wilde",aliases:["oscar wilde","wilde"],by:1854,bp:[53.35,-6.26,"Dublin, Ireland"],dy:1900,dp:[48.86,2.35,"Paris, France"],occupation:"Playwright and poet",death:"Meningitis"},
+{name:"George Orwell",aliases:["george orwell","orwell","eric blair"],by:1903,bp:[26.66,84.92,"Motihari, India"],dy:1950,dp:[51.51,-0.13,"London, UK"],occupation:"Novelist and essayist",death:"Tuberculosis"},
+{name:"Maya Angelou",aliases:["maya angelou","angelou"],by:1928,bp:[38.63,-90.20,"St. Louis, USA"],dy:2014,dp:[36.10,-80.24,"Winston-Salem, USA"],occupation:"Poet and memoirist",death:"Heart failure"},
+{name:"Ludwig van Beethoven",aliases:["beethoven","ludwig van beethoven"],by:1770,bp:[50.74,7.10,"Bonn, Germany"],dy:1827,dp:[48.21,16.37,"Vienna, Austria"],occupation:"Composer",death:"Liver failure (cirrhosis)"},
+{name:"Johann Sebastian Bach",aliases:["bach","johann sebastian bach","js bach"],by:1685,bp:[50.97,10.31,"Eisenach, Germany"],dy:1750,dp:[51.34,12.37,"Leipzig, Germany"],occupation:"Composer",death:"Stroke complications"},
+{name:"Frédéric Chopin",aliases:["chopin","frederic chopin","frédéric chopin"],by:1810,bp:[52.26,20.27,"Żelazowa Wola, Poland"],dy:1849,dp:[48.86,2.35,"Paris, France"],occupation:"Composer and pianist",death:"Tuberculosis"},
+{name:"Pyotr Tchaikovsky",aliases:["tchaikovsky","pyotr tchaikovsky","peter tchaikovsky"],by:1840,bp:[57.05,53.97,"Votkinsk, Russia"],dy:1893,dp:[59.93,30.34,"St. Petersburg, Russia"],occupation:"Composer",death:"Cholera (disputed)"},
+{name:"Bob Marley",aliases:["bob marley","marley"],by:1945,bp:[18.30,-77.20,"Nine Mile, Jamaica"],dy:1981,dp:[25.76,-80.19,"Miami, USA"],occupation:"Reggae musician",death:"Melanoma"},
+{name:"Jimi Hendrix",aliases:["jimi hendrix","hendrix"],by:1942,bp:[47.61,-122.33,"Seattle, USA"],dy:1970,dp:[51.51,-0.13,"London, UK"],occupation:"Rock guitarist",death:"Barbiturate-related asphyxiation"},
+{name:"Janis Joplin",aliases:["janis joplin","joplin"],by:1943,bp:[29.88,-93.94,"Port Arthur, Texas, USA"],dy:1970,dp:[34.05,-118.24,"Los Angeles, USA"],occupation:"Rock and blues singer",death:"Heroin overdose"},
+{name:"Kurt Cobain",aliases:["kurt cobain","cobain"],by:1967,bp:[46.97,-123.81,"Aberdeen, Washington, USA"],dy:1994,dp:[47.61,-122.33,"Seattle, USA"],occupation:"Rock musician (Nirvana)",death:"Self-inflicted gunshot"},
+{name:"Whitney Houston",aliases:["whitney houston","whitney"],by:1963,bp:[40.74,-74.17,"Newark, USA"],dy:2012,dp:[34.07,-118.40,"Beverly Hills, USA"],occupation:"Singer",death:"Accidental drowning (drug-related)"},
+{name:"Amy Winehouse",aliases:["amy winehouse","winehouse","amy"],by:1983,bp:[51.51,-0.13,"London, UK"],dy:2011,dp:[51.51,-0.13,"London, UK"],occupation:"Singer and songwriter",death:"Alcohol poisoning"},
+{name:"David Bowie",aliases:["david bowie","bowie","david jones","ziggy stardust"],by:1947,bp:[51.51,-0.13,"London, UK"],dy:2016,dp:[40.71,-74.01,"New York City, USA"],occupation:"Rock musician",death:"Liver cancer"},
+{name:"Prince",aliases:["prince","prince rogers nelson"],by:1958,bp:[44.98,-93.27,"Minneapolis, USA"],dy:2016,dp:[44.86,-93.53,"Chanhassen, Minnesota, USA"],occupation:"Singer and multi-instrumentalist",death:"Accidental fentanyl overdose"},
+{name:"Aretha Franklin",aliases:["aretha franklin","aretha"],by:1942,bp:[35.15,-90.05,"Memphis, USA"],dy:2018,dp:[42.33,-83.05,"Detroit, USA"],occupation:"Soul and R&B singer",death:"Pancreatic cancer"},
+{name:"Michelangelo",aliases:["michelangelo","michelangelo buonarroti"],by:1475,bp:[43.65,11.99,"Caprese, Italy"],dy:1564,dp:[41.90,12.50,"Rome, Italy"],occupation:"Sculptor and painter",death:"Natural causes in old age"},
+{name:"Claude Monet",aliases:["monet","claude monet"],by:1840,bp:[48.86,2.35,"Paris, France"],dy:1926,dp:[49.08,1.53,"Giverny, France"],occupation:"Impressionist painter",death:"Lung cancer"},
+{name:"Salvador Dalí",aliases:["salvador dali","dali","salvador dalí"],by:1904,bp:[42.27,2.96,"Figueres, Spain"],dy:1989,dp:[42.27,2.96,"Figueres, Spain"],occupation:"Surrealist painter",death:"Heart failure"},
+{name:"Andy Warhol",aliases:["andy warhol","warhol"],by:1928,bp:[40.44,-79.99,"Pittsburgh, USA"],dy:1987,dp:[40.71,-74.01,"New York City, USA"],occupation:"Pop artist",death:"Cardiac arrhythmia after surgery"},
+{name:"Georgia O'Keeffe",aliases:["georgia okeeffe","georgia o'keeffe","okeeffe"],by:1887,bp:[43.18,-89.21,"Sun Prairie, Wisconsin, USA"],dy:1986,dp:[35.69,-105.94,"Santa Fe, USA"],occupation:"Painter",death:"Natural causes in old age"},
+{name:"Henri Matisse",aliases:["henri matisse","matisse"],by:1869,bp:[50.10,3.55,"Le Cateau-Cambrésis, France"],dy:1954,dp:[43.70,7.27,"Nice, France"],occupation:"Painter and sculptor",death:"Heart attack"},
+{name:"Muhammad Ali",aliases:["muhammad ali","ali","cassius clay"],by:1942,bp:[38.25,-85.76,"Louisville, USA"],dy:2016,dp:[33.49,-111.93,"Scottsdale, Arizona, USA"],occupation:"Boxer and activist",death:"Septic shock (Parkinson's complications)"},
+{name:"Babe Ruth",aliases:["babe ruth","ruth","george ruth"],by:1895,bp:[39.29,-76.62,"Baltimore, USA"],dy:1948,dp:[40.71,-74.01,"New York City, USA"],occupation:"Baseball player",death:"Cancer of the nasopharynx"},
+{name:"Jesse Owens",aliases:["jesse owens","owens"],by:1913,bp:[34.69,-87.04,"Oakville, Alabama, USA"],dy:1980,dp:[32.22,-110.93,"Tucson, USA"],occupation:"Olympic sprinter",death:"Lung cancer"},
+{name:"Diego Maradona",aliases:["diego maradona","maradona"],by:1960,bp:[-34.71,-58.39,"Lanús, Argentina"],dy:2020,dp:[-34.42,-58.58,"Tigre, Argentina"],occupation:"Footballer",death:"Heart attack"},
+{name:"Kobe Bryant",aliases:["kobe bryant","kobe"],by:1978,bp:[39.95,-75.16,"Philadelphia, USA"],dy:2020,dp:[34.16,-118.64,"Calabasas, California, USA"],occupation:"Basketball player",death:"Helicopter crash"},
+{name:"Karl Marx",aliases:["karl marx","marx"],by:1818,bp:[49.75,6.64,"Trier, Germany"],dy:1883,dp:[51.51,-0.13,"London, UK"],occupation:"Philosopher and economist",death:"Pleurisy and bronchitis"},
+{name:"Friedrich Nietzsche",aliases:["nietzsche","friedrich nietzsche"],by:1844,bp:[51.27,12.16,"Röcken, Germany"],dy:1900,dp:[50.98,11.32,"Weimar, Germany"],occupation:"Philosopher",death:"Stroke and pneumonia"},
+{name:"Mother Teresa",aliases:["mother teresa","teresa","mother theresa"],by:1910,bp:[42.00,21.43,"Skopje, North Macedonia"],dy:1997,dp:[22.57,88.36,"Calcutta, India"],occupation:"Catholic nun and missionary",death:"Heart failure"},
+{name:"Christopher Columbus",aliases:["columbus","christopher columbus"],by:1451,bp:[44.41,8.93,"Genoa, Italy"],dy:1506,dp:[41.65,-4.72,"Valladolid, Spain"],occupation:"Explorer and navigator",death:"Reactive arthritis (disputed)"},
+{name:"Joan of Arc",aliases:["joan of arc","jeanne darc","jeanne d'arc"],by:1412,bp:[48.44,5.68,"Domrémy, France"],dy:1431,dp:[49.44,1.10,"Rouen, France"],occupation:"Military leader and saint",death:"Burned at the stake"},
+{name:"James Cook",aliases:["captain cook","james cook","captain james cook"],by:1728,bp:[54.55,-1.21,"Marton, UK"],dy:1779,dp:[19.48,-155.93,"Kealakekua Bay, Hawaii"],occupation:"Naval captain and explorer",death:"Killed by Native Hawaiians"},
+{name:"Indira Gandhi",aliases:["indira gandhi","indira"],by:1917,bp:[25.43,81.85,"Allahabad, India"],dy:1984,dp:[28.61,77.21,"New Delhi, India"],occupation:"Prime Minister of India",death:"Assassination — shot by guards"},
+{name:"Akira Kurosawa",aliases:["akira kurosawa","kurosawa"],by:1910,bp:[35.68,139.65,"Tokyo, Japan"],dy:1998,dp:[35.68,139.65,"Tokyo, Japan"],occupation:"Film director",death:"Stroke"},
+{name:"Pablo Neruda",aliases:["pablo neruda","neruda"],by:1904,bp:[-36.14,-71.83,"Parral, Chile"],dy:1973,dp:[-33.45,-70.66,"Santiago, Chile"],occupation:"Poet and diplomat",death:"Heart failure (cause contested)"},
+{name:"Gabriel García Márquez",aliases:["gabriel garcia marquez","garcia marquez","gabo","gabriel garcía márquez"],by:1927,bp:[10.59,-74.19,"Aracataca, Colombia"],dy:2014,dp:[19.43,-99.13,"Mexico City, Mexico"],occupation:"Novelist",death:"Pneumonia"},
+{name:"Alexander Graham Bell",aliases:["alexander graham bell","graham bell","bell"],by:1847,bp:[55.95,-3.19,"Edinburgh, UK"],dy:1922,dp:[46.10,-60.75,"Baddeck, Nova Scotia, Canada"],occupation:"Inventor of the telephone",death:"Diabetes complications"},
+{name:"Walt Disney",aliases:["walt disney","disney"],by:1901,bp:[41.88,-87.63,"Chicago, USA"],dy:1966,dp:[34.18,-118.31,"Burbank, California, USA"],occupation:"Animator and entrepreneur",death:"Lung cancer"},
+{name:"Heath Ledger",aliases:["heath ledger","ledger"],by:1979,bp:[-31.95,115.86,"Perth, Australia"],dy:2008,dp:[40.71,-74.01,"New York City, USA"],occupation:"Actor",death:"Accidental prescription drug overdose"}
 ];
+
+const ORIGINAL_NAMES=celebs.slice(0,20).map(c=>c.name);
 
 function initialsOf(name){
   const parts=name.trim().split(/\s+/);
   return parts[0][0].toUpperCase()+'.'+parts[parts.length-1][0].toUpperCase()+'.';
+}
+
+function getArchiveCelebs(){
+  const state=loadState();
+  const inArchive=new Set(state.playedNames||[]);
+  ORIGINAL_NAMES.forEach(n=>inArchive.add(n));
+  const todayName=todaysCeleb().name;
+  return celebs.filter(c=>inArchive.has(c.name) && c.name!==todayName);
 }
 
 function normalize(s){
@@ -437,7 +523,7 @@ function addYearLabel(parent, x, y, anchor, baseline, color, text){
     t.setAttribute('x',x); t.setAttribute('y',y);
     t.setAttribute('text-anchor',anchor);
     if(baseline) t.setAttribute('dominant-baseline',baseline);
-    t.setAttribute('font-family',"'Special Elite', monospace");
+    t.setAttribute('font-family',"'Lora', serif");
     t.setAttribute('font-size','20');
     t.setAttribute('fill',color);
     t.setAttribute('stroke',strokeColor);
@@ -515,13 +601,13 @@ function frameCurrentRound(animate){
 }
 
 // ---------- Game state ----------
-let mode='daily';        // 'daily' or 'freeplay'
+let mode='daily';        // 'daily' or 'archive'
 let current=null;
 let answered=false;
 let hintsUsed=0;
 let countdownTimer=null;
-let freeplayOrder=[];
-let freeplayPointer=0;
+let archiveOrder=[];
+let archivePointer=0;
 
 const els={
   dateLine:document.getElementById('date-line'),
@@ -601,17 +687,17 @@ function startDailyRound(){
   els.input.focus();
 }
 
-function startFreeplayRound(){
-  if(!freeplayOrder.length || freeplayPointer>=freeplayOrder.length){
-    freeplayOrder=celebs.map((_,i)=>i).filter(i=>celebs[i]!==todaysCeleb());
-    for(let i=freeplayOrder.length-1;i>0;i--){
+function startArchiveRound(){
+  if(!archiveOrder.length || archivePointer>=archiveOrder.length){
+    archiveOrder=getArchiveCelebs();
+    for(let i=archiveOrder.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
-      [freeplayOrder[i],freeplayOrder[j]]=[freeplayOrder[j],freeplayOrder[i]];
+      [archiveOrder[i],archiveOrder[j]]=[archiveOrder[j],archiveOrder[i]];
     }
-    freeplayPointer=0;
+    archivePointer=0;
   }
-  current=celebs[freeplayOrder[freeplayPointer++]];
-  els.dateLine.textContent='Free play round';
+  current=archiveOrder[archivePointer++];
+  els.dateLine.textContent='Archive · '+archiveOrder.length+' figures';
   els.feedback.classList.remove('show');
   els.input.value='';
   resetHintButtons();
@@ -673,6 +759,10 @@ function showResult(result, hintsAtSubmit, persist){
       state.lastDay=puzzleNumber();
       state.lastResult=result;
       state.lastHintsUsed=hintsAtSubmit;
+      state.playedNames=state.playedNames||[];
+      if(!state.playedNames.includes(current.name)){
+        state.playedNames.push(current.name);
+      }
       if(isCorrect){
         state.streak=(state.streak||0)+1;
         state.bestStreak=Math.max(state.bestStreak||0, state.streak);
@@ -683,11 +773,11 @@ function showResult(result, hintsAtSubmit, persist){
       els.streak.textContent=String(state.streak||0);
     }
     els.share.style.display='';
-    els.freeplay.textContent='Keep playing (free play) →';
+    els.freeplay.textContent='Open the archive →';
     startCountdown();
   }else{
     els.share.style.display='none';
-    els.freeplay.textContent='Next figure →';
+    els.freeplay.textContent='Next from archive →';
     els.countdown.textContent='';
   }
 }
@@ -721,9 +811,9 @@ els.input.addEventListener('keydown',e=>{ if(e.key==='Enter') submitGuess(); });
 els.skip.addEventListener('click',()=>showResult('missed', hintsUsed, mode==='daily'));
 
 els.freeplay.addEventListener('click',()=>{
-  mode='freeplay';
+  mode='archive';
   if(countdownTimer){ clearInterval(countdownTimer); countdownTimer=null; }
-  startFreeplayRound();
+  startArchiveRound();
 });
 
 els.share.addEventListener('click',async()=>{
