@@ -124,7 +124,7 @@
   }
   .hint-buttons{
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:repeat(2, 1fr);
     gap:6px;
   }
   .hint-btn{
@@ -153,6 +153,14 @@
     border-color:var(--ink-soft);
   }
   .hint-btn.revealed:hover{ background:var(--paper-deep); color:var(--ink); }
+  .hint-photo{
+    width:100%;
+    max-width:100px;
+    height:auto;
+    display:block;
+    margin:4px auto 0;
+    border-radius:2px;
+  }
 
   .guess-row{ display:flex; gap:10px; margin-bottom:8px; }
   input[type=text]{
@@ -184,6 +192,22 @@
   button:hover:not(:disabled){ background:var(--ink); color:var(--paper); }
   button:active:not(:disabled){ transform:scale(0.97); }
   button:disabled{ opacity:0.35; cursor:default; }
+  .wrong-notice{
+    font-size:13px;
+    font-style:italic;
+    color:var(--red);
+    margin:0 0 8px;
+    display:none;
+  }
+  .wrong-notice.show{ display:block; }
+  @keyframes hint-pulse{
+    0%,100%{ background:transparent; }
+    50%{ background:var(--paper-deep); }
+  }
+  .hints.needs-hint .hint-btn:not(.revealed){
+    border-color:var(--ink);
+    animation:hint-pulse 0.7s ease-in-out 3;
+  }
   .skip-link{
     display:block;
     width:100%;
@@ -258,7 +282,6 @@
     h1{ font-size:26px; }
     .stamp{ width:60px; height:60px; font-size:10px; top:0; right:0; }
     .reveal-name, .reveal-bio, .countdown{ padding-right:0; }
-    .hint-buttons{ grid-template-columns:1fr; }
   }
 </style>
 </head>
@@ -308,6 +331,7 @@
       <button class="hint-btn" type="button" data-hint="occupation"><span class="hint-title">Occupation</span></button>
       <button class="hint-btn" type="button" data-hint="initials"><span class="hint-title">Initials</span></button>
       <button class="hint-btn" type="button" data-hint="death"><span class="hint-title">Manner of death</span></button>
+      <button class="hint-btn" type="button" data-hint="image"><span class="hint-title">Image</span></button>
     </div>
   </div>
 
@@ -315,6 +339,7 @@
     <input type="text" id="guess-input" placeholder="Who is it? Type a name…" autocomplete="off" disabled>
     <button id="submit-btn" type="button" disabled>Submit</button>
   </div>
+  <p class="wrong-notice" id="wrong-notice"></p>
   <button class="skip-link" id="skip-btn" type="button" disabled>I don't know — reveal</button>
 
   <div class="feedback" id="feedback">
@@ -484,8 +509,12 @@ function puzzleNumber(){
   return Math.floor((todayUTC()-EPOCH_UTC)/86400000)+1;
 }
 function todaysCeleb(){
-  const idx=((puzzleNumber()-1) % celebs.length + celebs.length) % celebs.length;
-  return celebs[idx];
+  const state=loadState();
+  const played=new Set([...(state.playedNames||[]),...ORIGINAL_NAMES]);
+  const pool=celebs.filter(c=>!played.has(c.name));
+  if(!pool.length) return celebs[((puzzleNumber()-1)%celebs.length+celebs.length)%celebs.length];
+  const idx=((puzzleNumber()-1)%pool.length+pool.length)%pool.length;
+  return pool[idx];
 }
 function msUntilNextUTCMidnight(){
   const n=new Date();
@@ -606,6 +635,7 @@ let current=null;
 let answered=false;
 let hintsUsed=0;
 let countdownTimer=null;
+let wrongGuesses=0;
 let archiveOrder=[];
 let archivePointer=0;
 
@@ -623,7 +653,8 @@ const els={
   countdown:document.getElementById('countdown-line'),
   share:document.getElementById('share-btn'),
   freeplay:document.getElementById('freeplay-btn'),
-  hintsBlock:document.getElementById('hints-block')
+  hintsBlock:document.getElementById('hints-block'),
+  wrongNotice:document.getElementById('wrong-notice')
 };
 
 function resetHintButtons(){
@@ -634,23 +665,58 @@ function resetHintButtons(){
     if(valueEl) valueEl.remove();
   });
   hintsUsed=0;
+  wrongGuesses=0;
   els.hintsUsedEl.textContent='0';
+  els.wrongNotice.classList.remove('show');
+  els.hintsBlock.classList.remove('needs-hint');
 }
 
-function revealHint(btn){
+async function revealHint(btn){
   if(btn.classList.contains('revealed') || answered) return;
   const kind=btn.dataset.hint;
-  let value='';
-  if(kind==='occupation') value=current.occupation;
-  else if(kind==='initials') value=initialsOf(current.name);
-  else if(kind==='death') value=current.death;
-  const span=document.createElement('span');
-  span.className='hint-value';
-  span.textContent=value;
-  btn.appendChild(span);
   btn.classList.add('revealed');
   hintsUsed++;
   els.hintsUsedEl.textContent=String(hintsUsed);
+  els.hintsBlock.classList.remove('needs-hint');
+  if(!answered){
+    els.input.disabled=false;
+    els.submit.disabled=false;
+    els.input.focus();
+  }
+  if(kind==='image'){
+    const img=document.createElement('img');
+    img.className='hint-photo';
+    img.alt=current.name;
+    const loading=document.createElement('span');
+    loading.className='hint-value';
+    loading.textContent='Loading…';
+    btn.appendChild(loading);
+    try{
+      const res=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(current.name));
+      const data=await res.json();
+      loading.remove();
+      if(data.thumbnail?.source){
+        img.src=data.thumbnail.source;
+        btn.appendChild(img);
+      }else{
+        const span=document.createElement('span');
+        span.className='hint-value';
+        span.textContent='No photo found';
+        btn.appendChild(span);
+      }
+    }catch(e){
+      loading.textContent='Unavailable';
+    }
+  }else{
+    let value='';
+    if(kind==='occupation') value=current.occupation;
+    else if(kind==='initials') value=initialsOf(current.name);
+    else if(kind==='death') value=current.death;
+    const span=document.createElement('span');
+    span.className='hint-value';
+    span.textContent=value;
+    btn.appendChild(span);
+  }
 }
 document.querySelectorAll('.hint-btn').forEach(btn=>{
   btn.addEventListener('click',()=>revealHint(btn));
@@ -676,7 +742,7 @@ function startDailyRound(){
   resetHintButtons();
   answered=false;
 
-  if(state.lastDay===pNum){
+  if(state.lastDay===pNum && state.lastCeleb===current.name){
     // Already played today — restore final state
     placePinsAndFrame();
     showResult(state.lastResult, state.lastHintsUsed||0, /*persist*/false);
@@ -757,6 +823,7 @@ function showResult(result, hintsAtSubmit, persist){
     if(persist){
       const state=loadState();
       state.lastDay=puzzleNumber();
+      state.lastCeleb=current.name;
       state.lastResult=result;
       state.lastHintsUsed=hintsAtSubmit;
       state.playedNames=state.playedNames||[];
@@ -802,8 +869,24 @@ function submitGuess(){
   if(answered) return;
   const val=els.input.value;
   if(!val.trim()) return;
-  const isCorrect=checkGuess(val,current);
-  showResult(isCorrect?'correct':'missed', hintsUsed, /*persist*/ mode==='daily');
+  if(checkGuess(val,current)){
+    els.wrongNotice.classList.remove('show');
+    els.hintsBlock.classList.remove('needs-hint');
+    showResult('correct', hintsUsed, mode==='daily');
+  }else{
+    wrongGuesses++;
+    els.input.value='';
+    if(wrongGuesses>=3){
+      showResult('missed', hintsUsed, mode==='daily');
+    }else{
+      const left=3-wrongGuesses;
+      els.wrongNotice.textContent='Incorrect — '+left+' guess'+(left===1?'':'es')+' remaining. Choose a clue above.';
+      els.wrongNotice.classList.add('show');
+      els.hintsBlock.classList.add('needs-hint');
+      els.input.disabled=true;
+      els.submit.disabled=true;
+    }
+  }
 }
 
 els.submit.addEventListener('click',submitGuess);
