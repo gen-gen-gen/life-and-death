@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life and death — guess the celebrity</title>
+<title>Vitals — guess the celebrity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -15,6 +15,7 @@
     --ink-soft:#74695A;
     --green:#3F6B4A;
     --red:#9C3B33;
+    --sea:#7FA3AC;
     --line:#C9B98B;
     --backdrop:#0B1626;
   }
@@ -48,6 +49,14 @@
     pointer-events:none;
   }
   header{ text-align:center; margin-bottom:4px; }
+  .site-nav{
+    text-align:center;
+    font-size:11px;
+    letter-spacing:0.5px;
+    margin:-4px 0 10px;
+  }
+  .site-nav a{ color:var(--ink-soft); text-decoration:none; border-bottom:1px dashed var(--ink-soft); }
+  .site-nav a:hover{ color:var(--ink); border-bottom-color:var(--ink); }
   h1{
     font-family:'Playfair Display', serif;
     font-weight:700;
@@ -288,8 +297,9 @@
 <body>
 <div class="sheet">
   <header>
-    <h1>Life and death</h1>
+    <h1>Vitals</h1>
   </header>
+  <p class="site-nav"><a href="borders.html">guess da country →</a></p>
   <div class="stat-row">
     <span id="date-line">Loading…</span>
     <span>Streak <b id="streak">0</b></span>
@@ -303,9 +313,9 @@
           <stop offset="50%" stop-color="var(--red)"></stop>
         </linearGradient>
       </defs>
-      <rect x="0" y="0" width="680" height="420" fill="var(--paper-deep)"></rect>
+      <rect x="0" y="0" width="680" height="420" fill="var(--paper)"></rect>
       <g id="zoom-layer">
-        <path id="land" fill="var(--paper)" stroke="var(--ink-soft)" stroke-width="0.6" vector-effect="non-scaling-stroke"></path>
+        <path id="land" fill="var(--sea)" fill-rule="evenodd" stroke="var(--ink-soft)" stroke-width="0.6" vector-effect="non-scaling-stroke"></path>
         <line id="connector" x1="0" y1="0" x2="0" y2="0" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.65" vector-effect="non-scaling-stroke"></line>
         <g id="birth-mark"><g class="marker-inner"></g></g>
         <g id="death-mark"><g class="marker-inner"></g></g>
@@ -905,7 +915,7 @@ els.share.addEventListener('click',async()=>{
   const ok=state.lastResult==='correct';
   const hu=state.lastHintsUsed||0;
   const hintGlyphs='💡'.repeat(hu)+'·'.repeat(3-hu);
-  const text='Life and Death #'+pNum+' '+(ok?'✓':'✗')+' '+hintGlyphs+(state.streak?(' · streak '+state.streak):'');
+  const text='Vitals #'+pNum+' '+(ok?'✓':'✗')+' '+hintGlyphs+(state.streak?(' · streak '+state.streak):'');
   try{
     if(navigator.share){
       await navigator.share({text});
