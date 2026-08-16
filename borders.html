@@ -24,335 +24,160 @@
   }
   *{ box-sizing:border-box; }
   body{
-    margin:0;
-    min-height:100vh;
+    margin:0; min-height:100vh;
     background:var(--backdrop);
     background-image:
       radial-gradient(circle at 18% 16%, rgba(255,255,255,0.08), transparent 60%),
       radial-gradient(circle at 82% 84%, rgba(0,0,0,0.3), transparent 60%);
-    font-family:'Lora', serif;
-    color:var(--ink);
-    display:flex;
-    justify-content:center;
-    padding:32px 16px 64px;
+    font-family:'Lora', serif; color:var(--ink);
+    display:flex; justify-content:center; padding:32px 16px 64px;
   }
   .sheet{
-    width:100%;
-    max-width:760px;
-    background:var(--paper);
+    width:100%; max-width:760px; background:var(--paper);
     border:1px solid var(--line);
     box-shadow:0 0 0 1px var(--paper-deep), 0 12px 30px rgba(43,42,40,0.18);
-    padding:32px 32px 36px;
-    position:relative;
+    padding:32px 32px 36px; position:relative;
   }
   .sheet::before{
-    content:"";
-    position:absolute; inset:10px;
-    border:1px solid var(--line);
-    pointer-events:none;
+    content:""; position:absolute; inset:10px;
+    border:1px solid var(--line); pointer-events:none;
   }
   header{ text-align:center; margin-bottom:4px; }
   .site-nav{
-    text-align:center;
-    font-size:11px;
-    letter-spacing:0.5px;
-    margin:-4px 0 10px;
+    text-align:center; font-size:11px; letter-spacing:0.5px; margin:-4px 0 10px;
   }
   .site-nav a{ color:var(--ink-soft); text-decoration:none; border-bottom:1px dashed var(--ink-soft); }
   .site-nav a:hover{ color:var(--ink); border-bottom-color:var(--ink); }
-  h1{
-    font-family:'Playfair Display', serif;
-    font-weight:700;
-    font-size:22px;
-    margin:0 0 12px;
-    letter-spacing:0.5px;
-  }
-  .tagline{
-    font-style:italic;
-    color:var(--ink-soft);
-    font-size:14px;
-    margin:0 0 18px;
-    text-align:center;
-  }
+  h1{ font-family:'Playfair Display', serif; font-weight:700; font-size:22px; margin:0 0 12px; letter-spacing:0.5px; }
   .stat-row{
     display:flex; justify-content:space-between; align-items:center; gap:12px;
-    font-family:'Lora', serif;
-    font-size:12px;
-    color:var(--ink-soft);
-    border-top:1px dashed var(--line);
-    border-bottom:1px dashed var(--line);
-    padding:8px 2px;
-    margin-bottom:12px;
-    letter-spacing:0.5px;
-    flex-wrap:wrap;
+    font-size:12px; color:var(--ink-soft);
+    border-top:1px dashed var(--line); border-bottom:1px dashed var(--line);
+    padding:8px 2px; margin-bottom:12px; letter-spacing:0.5px; flex-wrap:wrap;
   }
   .stat-row b{ color:var(--ink); font-weight:400; }
-  .pips-row{
-    display:flex; justify-content:center; align-items:center; gap:10px;
-    margin:0 0 14px;
-  }
-  .pip{
-    width:9px; height:9px; border-radius:50%;
-    background:var(--paper-deep);
-    border:1px solid var(--ink-soft);
-  }
+  .pips-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin:0 0 14px; }
+  .pip{ width:9px; height:9px; border-radius:50%; background:var(--paper-deep); border:1px solid var(--ink-soft); }
   .pip.filled{ background:var(--accent); border-color:var(--accent); }
   .pip.current{ box-shadow:0 0 0 3px var(--accent-soft); }
   .pip.correct{ background:var(--green); border-color:var(--green); }
   .pip.wrong{ background:var(--red); border-color:var(--red); }
   .level-label{
-    text-align:center;
-    font-size:11px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 10px;
+    text-align:center; font-size:11px; letter-spacing:1px;
+    text-transform:uppercase; color:var(--ink-soft); margin:0 0 10px;
   }
   .level-label b{ color:var(--ink); font-weight:500; }
   .map-frame{
     border:1px solid var(--ink-soft);
     box-shadow:0 0 0 4px var(--paper), 0 0 0 5px var(--ink-soft);
-    margin-bottom:10px;
-    overflow:hidden;
-    position:relative;
+    margin-bottom:10px; overflow:hidden;
   }
-  #map{
-    display:block;
-    width:100%;
-    height:380px;
-  }
+  #map{ display:block; width:100%; height:380px; }
   .map-frame.locked #map{ cursor:default; }
-  .map-hint{
-    text-align:center;
-    font-size:11px;
-    font-style:italic;
-    color:var(--ink-soft);
-    margin:0 0 14px;
-  }
-  .zoom-controls{
-    display:flex; gap:8px; justify-content:center;
-    margin:0 0 18px;
-  }
+  .map-hint{ text-align:center; font-size:11px; font-style:italic; color:var(--ink-soft); margin:0 0 14px; }
+  .zoom-controls{ display:flex; gap:8px; justify-content:center; margin:0 0 18px; }
   .zoom-controls button{ padding:4px 16px; }
-
   .guess-row{ display:flex; gap:10px; margin-bottom:8px; }
   .combo{ position:relative; flex:1; min-width:0; }
   .suggestions{
-    display:none;
-    position:absolute;
-    top:100%; left:0; right:0;
-    margin-top:2px;
-    background:var(--paper);
-    border:1px solid var(--ink-soft);
-    max-height:220px;
-    overflow-y:auto;
-    z-index:1000;
+    display:none; position:absolute; top:100%; left:0; right:0; margin-top:2px;
+    background:var(--paper); border:1px solid var(--ink-soft);
+    max-height:220px; overflow-y:auto; z-index:1000;
     box-shadow:0 8px 18px rgba(43,42,40,0.22);
   }
   .suggestions.show{ display:block; }
-  .suggestions .opt{
-    padding:8px 10px;
-    font-size:14px;
-    cursor:pointer;
-    border-bottom:1px solid var(--paper-deep);
-  }
+  .suggestions .opt{ padding:8px 10px; font-size:14px; cursor:pointer; border-bottom:1px solid var(--paper-deep); }
   .suggestions .opt:last-child{ border-bottom:none; }
-  .suggestions .opt:hover,
-  .suggestions .opt.active{ background:var(--paper-deep); }
+  .suggestions .opt:hover, .suggestions .opt.active{ background:var(--paper-deep); }
   input[type=text]{
-    width:100%;
-    font-family:'Lora', serif;
-    font-size:16px;
-    padding:10px 4px;
-    border:none;
-    border-bottom:1px dashed var(--ink-soft);
-    background:transparent;
-    color:var(--ink);
-    outline:none;
-    min-width:0;
+    width:100%; font-family:'Lora', serif; font-size:16px; padding:10px 4px;
+    border:none; border-bottom:1px dashed var(--ink-soft); background:transparent;
+    color:var(--ink); outline:none; min-width:0;
   }
   input[type=text]:focus{ border-bottom-color:var(--ink); }
   input[type=text]:disabled{ opacity:0.5; }
   button{
-    font-family:'Lora', serif;
-    font-size:12px;
-    letter-spacing:0.5px;
-    padding:0 18px;
-    cursor:pointer;
-    border:1px solid var(--ink);
-    background:transparent;
-    color:var(--ink);
-    white-space:nowrap;
-    transition:transform .12s ease, background .12s ease, color .12s ease;
+    font-family:'Lora', serif; font-size:12px; letter-spacing:0.5px; padding:0 18px;
+    cursor:pointer; border:1px solid var(--ink); background:transparent; color:var(--ink);
+    white-space:nowrap; transition:transform .12s ease, background .12s ease, color .12s ease;
   }
   button:hover:not(:disabled){ background:var(--ink); color:var(--paper); }
   button:active:not(:disabled){ transform:scale(0.97); }
   button:disabled{ opacity:0.35; cursor:default; }
   .skip-link{
-    display:block;
-    width:100%;
-    text-align:center;
-    border:none;
-    background:none;
-    text-decoration:underline;
-    font-family:'Lora', serif;
-    font-size:12px;
-    color:var(--ink-soft);
-    padding:4px 0 0;
+    display:block; width:100%; text-align:center; border:none; background:none;
+    text-decoration:underline; font-family:'Lora', serif; font-size:12px;
+    color:var(--ink-soft); padding:4px 0 0;
   }
   .skip-link:hover:not(:disabled){ background:none; color:var(--ink); }
-
-  .feedback{
-    margin-top:22px;
-    padding-top:16px;
-    border-top:1px dashed var(--line);
-    display:none;
-    position:relative;
-  }
+  .feedback{ margin-top:22px; padding-top:16px; border-top:1px dashed var(--line); display:none; position:relative; }
   .feedback.show{ display:block; }
   .stamp{
-    position:absolute;
-    top:6px; right:6px;
-    width:80px; height:80px;
-    border-radius:50%;
-    border:3px double currentColor;
-    display:flex; align-items:center; justify-content:center;
-    text-align:center;
-    font-family:'Lora', serif;
-    font-size:13px;
-    text-transform:uppercase;
-    transform:rotate(-10deg);
-    line-height:1.2;
+    position:absolute; top:6px; right:6px; width:80px; height:80px; border-radius:50%;
+    border:3px double currentColor; display:flex; align-items:center; justify-content:center;
+    text-align:center; font-family:'Lora', serif; font-size:13px; text-transform:uppercase;
+    transform:rotate(-10deg); line-height:1.2;
   }
   .stamp.correct{ color:var(--green); }
   .stamp.wrong{ color:var(--red); }
-  .reveal-name{
-    font-family:'Playfair Display', serif;
-    font-weight:600;
-    font-size:20px;
-    margin:0 0 6px;
-    padding-right:96px;
-  }
-  .reveal-note{
-    font-size:14px;
-    color:var(--ink-soft);
-    margin:0 0 10px;
-    padding-right:96px;
-    line-height:1.6;
-  }
+  .reveal-name{ font-family:'Playfair Display', serif; font-weight:600; font-size:20px; margin:0 0 6px; padding-right:96px; }
+  .reveal-note{ font-size:14px; color:var(--ink-soft); margin:0 0 10px; padding-right:96px; line-height:1.6; }
   #guess-line{ color:var(--red); font-style:italic; }
   #guess-line:empty{ display:none; }
-  .feedback-actions{
-    display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;
-  }
-
+  .feedback-actions{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
   .summary{ display:none; }
   .summary.show{ display:block; }
-  .summary-pips{
-    display:flex; justify-content:center; gap:12px; margin:10px 0 18px;
-  }
+  .summary-pips{ display:flex; justify-content:center; gap:12px; margin:10px 0 18px; }
   .summary-pips span{
-    width:34px; height:34px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    font-size:15px; border:1.5px solid;
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:15px; border:1.5px solid;
   }
   .summary-pips span.correct{ color:var(--green); border-color:var(--green); }
   .summary-pips span.wrong{ color:var(--red); border-color:var(--red); }
-  .summary-score{
-    text-align:center;
-    font-family:'Playfair Display', serif;
-    font-size:26px;
-    font-weight:700;
-    margin:0 0 4px;
-  }
-  .summary-sub{
-    text-align:center;
-    font-size:13px;
-    color:var(--ink-soft);
-    margin:0 0 18px;
-  }
-  .countdown{
-    font-family:'Lora', serif;
-    font-size:12px;
-    color:var(--ink-soft);
-    margin:0 0 16px;
-    text-align:center;
-  }
+  .summary-score{ text-align:center; font-family:'Playfair Display', serif; font-size:26px; font-weight:700; margin:0 0 4px; }
+  .summary-sub{ text-align:center; font-size:13px; color:var(--ink-soft); margin:0 0 18px; }
+  .countdown{ font-size:12px; color:var(--ink-soft); margin:0 0 16px; text-align:center; }
   .countdown b{ color:var(--ink); font-weight:400; }
-  .summary-actions{
-    display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
-  }
-  .loading-note{
-    text-align:center;
-    font-size:12px;
-    color:var(--ink-soft);
-    padding:40px 0;
-  }
+  .summary-actions{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
   .freeplay-banner{
-    text-align:center;
-    font-size:11px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 10px;
-    display:none;
+    text-align:center; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 10px; display:none;
   }
   .freeplay-banner.show{ display:block; }
-
-  /* Leaflet overrides to match our design */
-  .leaflet-container{ font-family:'Lora', serif; }
-  .leaflet-control-attribution{
-    font-size:9px;
-    background:rgba(241,230,203,0.75) !important;
-    color:var(--ink-soft) !important;
-  }
-  .leaflet-control-attribution a{ color:var(--ink-soft) !important; }
-
-  /* Custom pin icon */
+  .leaflet-container{ font-family:'Lora', serif; background:var(--paper-deep); }
+  .leaflet-control-attribution{ font-size:9px !important; }
   .game-pin svg{ display:block; }
-
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
   @media (max-width:480px){
-    .sheet{ padding:22px 18px 28px; }
-    h1{ font-size:26px; }
+    .sheet{ padding:22px 18px 28px; } h1{ font-size:26px; }
     .stamp{ width:60px; height:60px; font-size:10px; top:0; right:0; }
-    .reveal-name, .reveal-note{ padding-right:0; }
-    #map{ height:280px; }
+    .reveal-name, .reveal-note{ padding-right:0; } #map{ height:280px; }
   }
 </style>
 </head>
 <body>
 <div class="sheet">
-  <header>
-    <h1>guess da country</h1>
-  </header>
+  <header><h1>guess da country</h1></header>
   <p class="site-nav"><a href="index.html">← Vitals</a></p>
-
   <div class="stat-row">
     <span id="date-line">Loading…</span>
     <span>Streak <b id="streak">0</b></span>
     <span id="mode-line">Daily</span>
   </div>
-
   <div id="freeplay-banner" class="freeplay-banner">Practice mode — unranked, plays forever</div>
-
   <div id="pips-wrap">
     <div class="pips-row" id="pips-row"></div>
     <p class="level-label" id="level-label">Puzzle <b>1</b> of 5 · <b>Wide</b></p>
   </div>
-
   <div id="map-section">
-    <div class="map-frame" id="map-frame">
-      <div id="map"></div>
-    </div>
+    <div class="map-frame" id="map-frame"><div id="map"></div></div>
     <p class="map-hint" id="map-hint">Guess to unlock pan &amp; zoom</p>
     <div class="zoom-controls">
-      <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
-      <button id="zoom-reset" type="button" aria-label="Reset view">Reset view</button>
-      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-out" type="button">−</button>
+      <button id="zoom-reset" type="button">Reset view</button>
+      <button id="zoom-in" type="button">+</button>
     </div>
   </div>
-
   <div id="puzzle-view">
     <div class="guess-row">
       <div class="combo">
@@ -362,18 +187,14 @@
       <button id="submit-btn" type="button" disabled>Submit</button>
     </div>
     <button class="skip-link" id="skip-btn" type="button" disabled>I don't know — reveal</button>
-
     <div class="feedback" id="feedback">
       <div class="stamp" id="stamp"></div>
       <p class="reveal-name" id="reveal-name"></p>
       <p class="reveal-note" id="guess-line"></p>
       <p class="reveal-note" id="reveal-note"></p>
-      <div class="feedback-actions">
-        <button id="next-btn" type="button">Next puzzle →</button>
-      </div>
+      <div class="feedback-actions"><button id="next-btn" type="button">Next puzzle →</button></div>
     </div>
   </div>
-
   <div class="summary" id="summary-view">
     <p class="summary-score" id="summary-score"></p>
     <div class="summary-pips" id="summary-pips"></div>
@@ -405,80 +226,71 @@ const EXCLUDE_NAMES=new Set([
   "St. Pierre and Miquelon","American Samoa","Guam","N. Mariana Is.","U.S. Minor Outlying Is.","Cook Is.",
   "Niue","Norfolk Island","Pitcairn Is.","N. Cyprus","W. Sahara","Somaliland"
 ]);
-const MIN_AREA_KM2=1000;
+const MIN_AREA_KM2=5000;
 
-// Difficulty levels — tRange is how far toward the centroid (0=edge, 1=center).
-// Easy: pin deep inside the country (high t), wide view showing lots of context.
-// Hard: pin right on a political border (low t), tight zoom with little context.
+// Difficulty is defined by two things moving together:
+//   tRange: how far from the edge toward the centroid (0=on the border/coast, 1=centroid)
+//           EASY  → pin near the edge → distinctive coastline or border visible in the wide frame
+//           HARD  → pin deep in interior → only terrain/landscape visible in the tight frame
+//   widthKm: how much of the world is visible (approx frame width at the puzzle lat)
+//           Wide frame at level 1 means you can see the country's shape and its neighbours.
+//           Tight frame at level 5 means you see a patch of landscape with no context.
+// The two axes compound: level 1 gives you a near-coast pin AND a wide view (very easy);
+// level 5 gives you a deep-interior pin AND a tight view (very hard).
 const LEVELS=[
-  {label:'Wide',        preferBorder:0.0,  tRange:[0.55,0.82], zoomFactor:0.22},
-  {label:'Regional',    preferBorder:0.15, tRange:[0.30,0.55], zoomFactor:0.40},
-  {label:'Close',       preferBorder:0.40, tRange:[0.12,0.30], zoomFactor:0.62},
-  {label:'Tight',       preferBorder:0.68, tRange:[0.03,0.12], zoomFactor:0.84},
-  {label:'Point-blank', preferBorder:0.90, tRange:[0.01,0.04], zoomFactor:1.00}
+  {label:'Wide',        preferBorder:0.10, tRange:[0.01,0.08], widthKm:640},
+  {label:'Regional',   preferBorder:0.25, tRange:[0.06,0.18], widthKm:240},
+  {label:'Close',      preferBorder:0.50, tRange:[0.14,0.30], widthKm:90},
+  {label:'Tight',      preferBorder:0.72, tRange:[0.28,0.48], widthKm:34},
+  {label:'Point-blank',preferBorder:0.88, tRange:[0.48,0.75], widthKm:12}
 ];
 
 function mulberry32(seed){
   let t=seed>>>0;
   return function(){
     t+=0x6D2B79F5;
-    let r=Math.imul(t ^ t>>>15, 1|t);
-    r=(r+Math.imul(r ^ r>>>7, 61|r)) ^ r;
-    return ((r ^ r>>>14)>>>0)/4294967296;
+    let r=Math.imul(t^t>>>15,1|t);
+    r=(r+Math.imul(r^r>>>7,61|r))^r;
+    return ((r^r>>>14)>>>0)/4294967296;
   };
 }
 function hashSeed(a,b){
-  let h=Math.imul(a ^ 0x9E3779B9, 2654435761) ^ Math.imul(b + 1, 40503);
-  h=(h ^ (h>>>16))>>>0;
-  return h;
+  let h=Math.imul(a^0x9E3779B9,2654435761)^Math.imul(b+1,40503);
+  h=(h^(h>>>16))>>>0; return h;
 }
 function normalize(s){
   return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
 }
 
-// ---------- Daily / persistent state ----------
-function todayUTC(){
-  const n=new Date();
-  return Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
-}
-function puzzleNumber(){
-  return Math.floor((todayUTC()-EPOCH_UTC)/86400000)+1;
-}
+function todayUTC(){ const n=new Date(); return Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()); }
+function puzzleNumber(){ return Math.floor((todayUTC()-EPOCH_UTC)/86400000)+1; }
 function msUntilNextUTCMidnight(){
   const n=new Date();
-  const next=Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()+1, 0,0,0);
-  return next-n.getTime();
+  return Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-n.getTime();
 }
 function formatCountdown(ms){
   const s=Math.max(0,Math.floor(ms/1000));
-  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
   return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
 }
 function formatDate(){
-  const n=new Date();
-  return n.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'UTC'})+' (UTC)';
+  return new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric',timeZone:'UTC'})+' (UTC)';
 }
-function loadState(){
-  try{ const raw=localStorage.getItem(STORAGE_KEY); return raw?JSON.parse(raw):{}; }catch(e){ return {}; }
-}
-function saveState(s){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){} }
+function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?JSON.parse(r):{}; }catch(e){ return {}; } }
+function saveState(s){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)); }catch(e){} }
 
-// ---------- Geometry engine ----------
-let coastIndex;
+// ---------- Geometry ----------
 let countryPool=[], countryByName=new Map();
 
-function decodeArc(arc, transform){
+function decodeArc(arc,transform){
   let x=0,y=0; const pts=[];
-  for(const d of arc){
-    x+=d[0]; y+=d[1];
-    pts.push([x*transform.scale[0]+transform.translate[0], y*transform.scale[1]+transform.translate[1]]);
-  }
+  for(const d of arc){ x+=d[0]; y+=d[1]; pts.push([x*transform.scale[0]+transform.translate[0], y*transform.scale[1]+transform.translate[1]]); }
   return pts;
 }
 
 function computeArcInfo(world){
   const transform=world.transform;
-  const decodedArcs=world.arcs.map(a=>decodeArc(a, transform));
+  const decodedArcs=world.arcs.map(a=>decodeArc(a,transform));
   const arcUsage=new Map();
   function tally(ring){ for(const idx of ring){ const k=idx>=0?idx:~idx; arcUsage.set(k,(arcUsage.get(k)||0)+1); } }
   world.objects.countries.geometries.forEach(g=>{
@@ -488,161 +300,102 @@ function computeArcInfo(world){
   return {decodedArcs, arcUsage};
 }
 
-function buildCoastIndex(arcInfo){
-  const cellSize=2;
-  const grid=new Map();
-  function addPoint(lon,lat){
-    const key=Math.floor(lon/cellSize)+','+Math.floor(lat/cellSize);
-    let arr=grid.get(key);
-    if(!arr){ arr=[]; grid.set(key,arr); }
-    arr.push(lon,lat);
-  }
-  arcInfo.decodedArcs.forEach((pts,idx)=>{
-    if((arcInfo.arcUsage.get(idx)||0)!==1) return;
-    pts.forEach(p=>{
-      addPoint(p[0],p[1]);
-      if(p[0]>150) addPoint(p[0]-360,p[1]);
-      else if(p[0]<-150) addPoint(p[0]+360,p[1]);
-    });
-  });
-  return {grid, cellSize};
+function nearestEdgeKm(lat,lon,country){
+  const pt=[lon,lat]; let best=Infinity;
+  country.polygons.forEach(poly=>poly.edges.forEach(edge=>{
+    const d=d3.geoDistance(pt,edge.p0)*R_KM;
+    if(d<best) best=d;
+  }));
+  return best===Infinity?0:best;
 }
 
-function nearestCoastKm(lat, lon, coastIndex){
-  const {grid, cellSize}=coastIndex;
-  const cx=Math.floor(lon/cellSize), cy=Math.floor(lat/cellSize);
-  let best=Infinity, foundAtRing=-1;
-  for(let ring=0; ring<=90; ring++){
-    const cells=[];
-    if(ring===0) cells.push([cx,cy]);
-    else{
-      for(let dx=-ring; dx<=ring; dx++){ cells.push([cx+dx,cy-ring]); cells.push([cx+dx,cy+ring]); }
-      for(let dy=-ring+1; dy<=ring-1; dy++){ cells.push([cx-ring,cy+dy]); cells.push([cx+ring,cy+dy]); }
-    }
-    let ringHasPoints=false;
-    for(const [gx,gy] of cells){
-      const arr=grid.get(gx+','+gy);
-      if(!arr) continue;
-      ringHasPoints=true;
-      for(let i=0;i<arr.length;i+=2){
-        const d=d3.geoDistance([lon,lat],[arr[i],arr[i+1]])*R_KM;
-        if(d<best) best=d;
-      }
-    }
-    if(ringHasPoints && foundAtRing<0) foundAtRing=ring;
-    if(foundAtRing>=0 && ring>=foundAtRing+1) break;
-  }
-  return best===Infinity ? 20000 : best;
-}
-
-function nearestEdgeKm(lat, lon, country){
-  const pt=[lon,lat];
-  let best=Infinity;
-  country.polygons.forEach(poly=>{
-    poly.edges.forEach(edge=>{
-      const d=d3.geoDistance(pt, edge.p0)*R_KM;
-      if(d<best) best=d;
-    });
-  });
-  return best===Infinity ? 0 : best;
-}
-
-function buildCountryPool(world, countries, arcInfo){
-  const decodedArcs=arcInfo.decodedArcs, arcUsage=arcInfo.arcUsage;
-  function getArcPts(i){ return i>=0 ? decodedArcs[i] : decodedArcs[~i].slice().reverse(); }
+function buildCountryPool(world,countries,arcInfo){
+  const {decodedArcs,arcUsage}=arcInfo;
+  function getArcPts(i){ return i>=0?decodedArcs[i]:decodedArcs[~i].slice().reverse(); }
   const rawGeoms=world.objects.countries.geometries;
-
   function buildRingEdges(ringArcIdxs){
     const edges=[];
     for(const idx of ringArcIdxs){
-      const pts=getArcPts(idx);
-      const key=idx>=0?idx:~idx;
+      const pts=getArcPts(idx); const key=idx>=0?idx:~idx;
       const isBorder=(arcUsage.get(key)||0)>=2;
       for(let i=0;i<pts.length-1;i++) edges.push({p0:pts[i],p1:pts[i+1],isBorder});
     }
     return edges;
   }
-
   const pool=[];
   for(let i=0;i<rawGeoms.length;i++){
-    const g=rawGeoms[i];
-    const name=g.properties && g.properties.name;
-    if(!name || EXCLUDE_NAMES.has(name)) continue;
+    const g=rawGeoms[i]; const name=g.properties&&g.properties.name;
+    if(!name||EXCLUDE_NAMES.has(name)) continue;
     const feature=countries.features[i];
-    if(!feature || !feature.geometry) continue;
+    if(!feature||!feature.geometry) continue;
     const areaKm2=d3.geoArea(feature)*R_KM*R_KM;
     if(areaKm2<MIN_AREA_KM2) continue;
-
-    let rawPolys, geoPolys;
+    let rawPolys,geoPolys;
     if(g.type==='Polygon'){ rawPolys=[g.arcs]; geoPolys=[feature.geometry.coordinates]; }
     else if(g.type==='MultiPolygon'){ rawPolys=g.arcs; geoPolys=feature.geometry.coordinates; }
     else continue;
-
     const polygons=[];
     for(let p=0;p<rawPolys.length;p++){
-      const outerRingArcs=rawPolys[p][0];
-      if(!outerRingArcs) continue;
-      const edges=buildRingEdges(outerRingArcs);
-      if(!edges.length) continue;
+      const outerRingArcs=rawPolys[p][0]; if(!outerRingArcs) continue;
+      const edges=buildRingEdges(outerRingArcs); if(!edges.length) continue;
       const coords=geoPolys[p];
       const polyFeature={type:'Feature',geometry:{type:'Polygon',coordinates:coords},properties:{}};
-      const areaP=Math.max(d3.geoArea(polyFeature)*R_KM*R_KM, 0.01);
+      const areaP=Math.max(d3.geoArea(polyFeature)*R_KM*R_KM,0.01);
       const centroid=d3.geoCentroid(polyFeature);
-      polygons.push({edges, areaP, centroid});
+      polygons.push({edges,areaP,centroid});
     }
     if(!polygons.length) continue;
-    pool.push({name, feature, areaKm2, polygons});
+    // Track whether this country has any shared land border (vs. pure island)
+    const hasLandBorder=polygons.some(poly=>poly.edges.some(e=>e.isBorder));
+    pool.push({name,feature,areaKm2,polygons,hasLandBorder});
   }
   return pool;
 }
 
-function pickPolygon(country, rng){
+function pickPolygon(country,rng){
   const weights=country.polygons.map(p=>Math.sqrt(p.areaP));
-  const total=weights.reduce((a,b)=>a+b,0);
-  let r=rng()*total;
+  const total=weights.reduce((a,b)=>a+b,0); let r=rng()*total;
   for(let i=0;i<country.polygons.length;i++){ r-=weights[i]; if(r<=0) return country.polygons[i]; }
   return country.polygons[country.polygons.length-1];
 }
-function pickEdge(edges, rng, preferBorder){
+function pickEdge(edges,rng,preferBorder){
   let pool=edges;
-  if(rng()<preferBorder){
-    const b=edges.filter(e=>e.isBorder);
-    if(b.length) pool=b;
-  }else{
-    const c=edges.filter(e=>!e.isBorder);
-    if(c.length) pool=c;
-  }
+  if(rng()<preferBorder){ const b=edges.filter(e=>e.isBorder); if(b.length) pool=b; }
+  else{ const c=edges.filter(e=>!e.isBorder); if(c.length) pool=c; }
   return pool[Math.floor(rng()*pool.length)];
 }
 
-function pickPuzzlePoint(country, level, rng, coastIndex){
+function pickPuzzlePoint(country,level,rng){
   const cfg=LEVELS[level-1];
+  let [tLo,tHi]=cfg.tRange;
+  // Pure island countries have no land borders — even a wide view can reveal the island's
+  // shape if the pin is right on the coast. Push the pin further inland so that the frame
+  // (especially at tight zoom levels) shows terrain rather than coastline shape.
+  if(!country.hasLandBorder){
+    tLo=Math.max(tLo,0.28);
+    tHi=Math.max(tHi,0.50);
+  }
   let point=null;
-  for(let attempt=0; attempt<18 && !point; attempt++){
-    const poly=pickPolygon(country, rng);
-    const edge=pickEdge(poly.edges, rng, cfg.preferBorder);
+  for(let attempt=0;attempt<18&&!point;attempt++){
+    const poly=pickPolygon(country,rng);
+    const edge=pickEdge(poly.edges,rng,cfg.preferBorder);
     const tEdge=rng();
-    const borderPt=d3.geoInterpolate(edge.p0, edge.p1)(tEdge);
-    const shrink=Math.pow(0.6, Math.floor(attempt/3));
-    const tLo=cfg.tRange[0]*shrink, tHi=cfg.tRange[1]*shrink;
-    const tOff=Math.min(tLo+rng()*(tHi-tLo), 0.95);
-    const cand=d3.geoInterpolate(borderPt, poly.centroid)(tOff);
-    if(d3.geoContains(country.feature, cand)) point=cand;
+    const borderPt=d3.geoInterpolate(edge.p0,edge.p1)(tEdge);
+    const shrink=Math.pow(0.6,Math.floor(attempt/3));
+    const tOff=Math.min(tLo+rng()*(tHi-tLo)*shrink,0.95);
+    const cand=d3.geoInterpolate(borderPt,poly.centroid)(tOff);
+    if(d3.geoContains(country.feature,cand)) point=cand;
   }
-  if(!point){
-    const poly=country.polygons.reduce((a,b)=>b.areaP>a.areaP?b:a);
-    point=poly.centroid;
-  }
-  const coastKm=nearestCoastKm(point[1], point[0], coastIndex);
-  return {country, level, lat:point[1], lon:point[0], coastKm};
+  if(!point){ const poly=country.polygons.reduce((a,b)=>b.areaP>a.areaP?b:a); point=poly.centroid; }
+  return {country, level, lat:point[1], lon:point[0]};
 }
 
-// ---------- Daily puzzle plan ----------
-function pickDailyCountryNames(pNum, playedNames){
+// ---------- Daily puzzle ----------
+function pickDailyCountryNames(pNum,playedNames){
   const played=new Set(playedNames||[]);
   let candidates=countryPool.filter(c=>!played.has(c.name));
   if(candidates.length<5) candidates=countryPool.slice();
-  const rng=mulberry32(hashSeed(pNum, 999983));
+  const rng=mulberry32(hashSeed(pNum,999983));
   const arr=candidates.slice();
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
   return arr.slice(0,5).map(c=>c.name);
@@ -650,61 +403,49 @@ function pickDailyCountryNames(pNum, playedNames){
 function ensureDailyState(pNum){
   let state=loadState();
   if(state.lastDay!==pNum){
-    const names=pickDailyCountryNames(pNum, state.playedNames);
-    state=Object.assign({}, state, {lastDay:pNum, dayCountries:names, dayIndex:0, results:[]});
+    const names=pickDailyCountryNames(pNum,state.playedNames);
+    state=Object.assign({},state,{lastDay:pNum,dayCountries:names,dayIndex:0,results:[]});
     saveState(state);
   }
   return state;
 }
-function buildDailyPuzzles(pNum, state){
+function buildDailyPuzzles(pNum,state){
   return (state.dayCountries||[]).map((name,i)=>{
     const country=countryByName.get(name);
-    const rng=mulberry32(hashSeed(pNum, i+1));
-    return pickPuzzlePoint(country, i+1, rng, coastIndex);
+    const rng=mulberry32(hashSeed(pNum,i+1));
+    return pickPuzzlePoint(country,i+1,rng);
   }).filter(Boolean);
 }
-function recordDailyAnswer(index, correct){
+function recordDailyAnswer(index,correct){
   const state=loadState();
-  state.results=state.results||[];
-  state.results[index]=correct;
-  state.dayIndex=index+1;
+  state.results=state.results||[]; state.results[index]=correct; state.dayIndex=index+1;
   if(state.dayIndex>=5){
-    const allCorrect=state.results.length===5 && state.results.every(r=>r===true);
+    const allCorrect=state.results.length===5&&state.results.every(r=>r===true);
     state.playedNames=state.playedNames||[];
     (state.dayCountries||[]).forEach(n=>{ if(!state.playedNames.includes(n)) state.playedNames.push(n); });
-    if(allCorrect){ state.streak=(state.streak||0)+1; state.bestStreak=Math.max(state.bestStreak||0, state.streak); }
+    if(allCorrect){ state.streak=(state.streak||0)+1; state.bestStreak=Math.max(state.bestStreak||0,state.streak); }
     else state.streak=0;
   }
-  saveState(state);
-  return state;
+  saveState(state); return state;
 }
 
-// ---------- Leaflet map ----------
-let leafletMap=null;
-let pinMarker=null;
-let correctLayer=null;
-let guessLayer=null;
-let zoomLocked=true;
+// ---------- Leaflet ----------
+let leafletMap=null, pinMarker=null, correctLayer=null, guessLayer=null, zoomLocked=true;
 
-// Convert coast distance → appropriate Leaflet zoom level, then apply zoomFactor
-function puzzleZoom(lat, coastKm, level){
-  // At Leaflet zoom z, half the map width (340 px of 680) covers:
-  //   340 * (40075 * cos(lat)) / (256 * 2^z) km
-  // Set that equal to coastKm / 0.55 (safety margin) → solve for z
+// Compute the Leaflet zoom level so that the frame is approximately widthKm wide,
+// adjusted for Mercator's latitude-dependent scale distortion.
+function puzzleZoom(lat,level){
   const cosLat=Math.cos(Math.abs(lat)*Math.PI/180);
-  const safeZ=Math.log2(40075*cosLat*340/(256*Math.max(coastKm,0.5)*0.55));
-  // zoomFactor < 1 means zoom OUT → subtract log2(1/zf) = add log2(zf) (negative)
-  const z=safeZ+Math.log2(LEVELS[level-1].zoomFactor);
-  return Math.max(2, Math.min(15, z));
+  const widthKm=LEVELS[level-1].widthKm;
+  // 680px spans widthKm km: 2^z = 40075 * cosLat * 680 / (256 * widthKm)
+  const z=Math.log2(40075*cosLat*680/(256*widthKm));
+  return Math.max(2,Math.min(15,z));
 }
 
-function frameCurrentPoint(puzzle, animate){
-  const z=puzzleZoom(puzzle.lat, puzzle.coastKm, puzzle.level);
-  if(animate){
-    leafletMap.flyTo([puzzle.lat, puzzle.lon], z, {duration:0.7, easeLinearity:0.5});
-  }else{
-    leafletMap.setView([puzzle.lat, puzzle.lon], z, {animate:false});
-  }
+function frameCurrentPoint(puzzle,animate){
+  const z=puzzleZoom(puzzle.lat,puzzle.level);
+  if(animate) leafletMap.flyTo([puzzle.lat,puzzle.lon],z,{duration:0.7,easeLinearity:0.5});
+  else leafletMap.setView([puzzle.lat,puzzle.lon],z,{animate:false});
 }
 
 const PIN_HTML=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="26" viewBox="-9 -25 18 26">
@@ -714,13 +455,10 @@ const PIN_HTML=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="26" v
 
 function placePin(){
   if(pinMarker){ pinMarker.remove(); pinMarker=null; }
-  const icon=L.divIcon({
-    html:PIN_HTML,
-    className:'game-pin',
-    iconSize:[18,26],
-    iconAnchor:[9,26]
-  });
-  pinMarker=L.marker([current.lat, current.lon], {icon, interactive:false, zIndexOffset:1000}).addTo(leafletMap);
+  pinMarker=L.marker([current.lat,current.lon],{
+    icon:L.divIcon({html:PIN_HTML,className:'game-pin',iconSize:[18,26],iconAnchor:[9,26]}),
+    interactive:false, zIndexOffset:1000
+  }).addTo(leafletMap);
 }
 
 function clearRevealOutline(){
@@ -728,379 +466,214 @@ function clearRevealOutline(){
   if(guessLayer){ guessLayer.remove(); guessLayer=null; }
 }
 
-function showRevealOutline(correctFeature, guessFeature){
+function showRevealOutline(correctFeature,guessFeature){
   clearRevealOutline();
-  correctLayer=L.geoJSON(correctFeature, {
-    style:{fillColor:'#3F6B4A', fillOpacity:0.38, color:'#3F6B4A', weight:2.5, opacity:0.9}
-  }).addTo(leafletMap);
-  if(guessFeature){
-    guessLayer=L.geoJSON(guessFeature, {
-      style:{fillColor:'#9C3B33', fillOpacity:0.32, color:'#9C3B33', weight:2, opacity:0.85}
-    }).addTo(leafletMap);
-  }
+  correctLayer=L.geoJSON(correctFeature,{style:{fillColor:'#3F6B4A',fillOpacity:0.38,color:'#3F6B4A',weight:2.5,opacity:0.9}}).addTo(leafletMap);
+  if(guessFeature) guessLayer=L.geoJSON(guessFeature,{style:{fillColor:'#9C3B33',fillOpacity:0.32,color:'#9C3B33',weight:2,opacity:0.85}}).addTo(leafletMap);
 }
 
-function frameToFitBoth(guessFeature){
+function frameToFitBoth(){
   if(!correctLayer) return;
   let bounds=correctLayer.getBounds();
   if(guessLayer) bounds=bounds.extend(guessLayer.getBounds());
-  leafletMap.fitBounds(bounds, {padding:[20,20], maxZoom:10});
+  leafletMap.fitBounds(bounds,{padding:[20,20],maxZoom:10});
 }
 
 // ---------- Game state ----------
-let mode='daily';
-let dailyPuzzles=[];
-let current=null;
-let currentIndex=0;
-let answered=false;
+let mode='daily', dailyPuzzles=[], current=null, currentIndex=0, answered=false;
 
 const els={
-  dateLine:document.getElementById('date-line'),
-  streak:document.getElementById('streak'),
-  modeLine:document.getElementById('mode-line'),
-  freeplayBanner:document.getElementById('freeplay-banner'),
-  pipsWrap:document.getElementById('pips-wrap'),
-  pipsRow:document.getElementById('pips-row'),
-  levelLabel:document.getElementById('level-label'),
-  puzzleView:document.getElementById('puzzle-view'),
-  mapSection:document.getElementById('map-section'),
-  summaryView:document.getElementById('summary-view'),
-  input:document.getElementById('guess-input'),
-  submit:document.getElementById('submit-btn'),
-  skip:document.getElementById('skip-btn'),
-  feedback:document.getElementById('feedback'),
-  stamp:document.getElementById('stamp'),
-  revealName:document.getElementById('reveal-name'),
-  guessLine:document.getElementById('guess-line'),
-  revealNote:document.getElementById('reveal-note'),
-  nextBtn:document.getElementById('next-btn'),
-  summaryScore:document.getElementById('summary-score'),
-  summaryPips:document.getElementById('summary-pips'),
-  summarySub:document.getElementById('summary-sub'),
-  countdown:document.getElementById('countdown-line'),
-  share:document.getElementById('share-btn'),
-  practice:document.getElementById('practice-btn'),
-  suggestions:document.getElementById('suggestions'),
-  mapFrame:document.getElementById('map-frame'),
-  mapHint:document.getElementById('map-hint'),
-  zoomIn:document.getElementById('zoom-in'),
-  zoomOut:document.getElementById('zoom-out'),
+  dateLine:document.getElementById('date-line'), streak:document.getElementById('streak'),
+  modeLine:document.getElementById('mode-line'), freeplayBanner:document.getElementById('freeplay-banner'),
+  pipsWrap:document.getElementById('pips-wrap'), pipsRow:document.getElementById('pips-row'),
+  levelLabel:document.getElementById('level-label'), puzzleView:document.getElementById('puzzle-view'),
+  mapSection:document.getElementById('map-section'), summaryView:document.getElementById('summary-view'),
+  input:document.getElementById('guess-input'), submit:document.getElementById('submit-btn'),
+  skip:document.getElementById('skip-btn'), feedback:document.getElementById('feedback'),
+  stamp:document.getElementById('stamp'), revealName:document.getElementById('reveal-name'),
+  guessLine:document.getElementById('guess-line'), revealNote:document.getElementById('reveal-note'),
+  nextBtn:document.getElementById('next-btn'), summaryScore:document.getElementById('summary-score'),
+  summaryPips:document.getElementById('summary-pips'), summarySub:document.getElementById('summary-sub'),
+  countdown:document.getElementById('countdown-line'), share:document.getElementById('share-btn'),
+  practice:document.getElementById('practice-btn'), suggestions:document.getElementById('suggestions'),
+  mapFrame:document.getElementById('map-frame'), mapHint:document.getElementById('map-hint'),
+  zoomIn:document.getElementById('zoom-in'), zoomOut:document.getElementById('zoom-out'),
   zoomReset:document.getElementById('zoom-reset')
 };
 
-let countryNames=[];
-let suggestionItems=[];
-let activeSuggestion=-1;
-
-function buildCountryNames(){
-  countryNames=countryPool.map(c=>c.name).sort((a,b)=>a.localeCompare(b));
-}
-
-function hideSuggestions(){
-  els.suggestions.classList.remove('show');
-  els.suggestions.innerHTML='';
-  suggestionItems=[];
-  activeSuggestion=-1;
-}
-
+let countryNames=[], suggestionItems=[], activeSuggestion=-1;
+function buildCountryNames(){ countryNames=countryPool.map(c=>c.name).sort((a,b)=>a.localeCompare(b)); }
+function hideSuggestions(){ els.suggestions.classList.remove('show'); els.suggestions.innerHTML=''; suggestionItems=[]; activeSuggestion=-1; }
 function renderSuggestions(query){
-  const q=normalize(query);
-  if(!q){ hideSuggestions(); return; }
-  const starts=[], contains=[];
-  countryNames.forEach(n=>{
-    const nn=normalize(n);
-    if(nn.startsWith(q)) starts.push(n);
-    else if(nn.includes(q)) contains.push(n);
-  });
-  suggestionItems=starts.concat(contains).slice(0,8);
-  activeSuggestion=-1;
-  els.suggestions.innerHTML='';
+  const q=normalize(query); if(!q){ hideSuggestions(); return; }
+  const starts=[],contains=[];
+  countryNames.forEach(n=>{ const nn=normalize(n); if(nn.startsWith(q)) starts.push(n); else if(nn.includes(q)) contains.push(n); });
+  suggestionItems=starts.concat(contains).slice(0,8); activeSuggestion=-1; els.suggestions.innerHTML='';
   if(!suggestionItems.length){ els.suggestions.classList.remove('show'); return; }
   suggestionItems.forEach(name=>{
-    const opt=document.createElement('div');
-    opt.className='opt';
-    opt.textContent=name;
-    opt.addEventListener('mousedown', ev=>{
-      ev.preventDefault();
-      selectSuggestion(name);
-    });
+    const opt=document.createElement('div'); opt.className='opt'; opt.textContent=name;
+    opt.addEventListener('mousedown',ev=>{ ev.preventDefault(); selectSuggestion(name); });
     els.suggestions.appendChild(opt);
   });
   els.suggestions.classList.add('show');
 }
-
-function selectSuggestion(name){
-  els.input.value=name;
-  hideSuggestions();
-  els.input.focus();
-}
-
+function selectSuggestion(name){ els.input.value=name; hideSuggestions(); els.input.focus(); }
 function moveSuggestion(delta){
   if(!suggestionItems.length) return;
   activeSuggestion=(activeSuggestion+delta+suggestionItems.length)%suggestionItems.length;
-  Array.from(els.suggestions.children).forEach((el,i)=>{
-    el.classList.toggle('active', i===activeSuggestion);
-  });
+  Array.from(els.suggestions.children).forEach((el,i)=>el.classList.toggle('active',i===activeSuggestion));
 }
 
-function renderPips(index, results){
+function renderPips(index,results){
   els.pipsRow.innerHTML='';
   for(let i=0;i<5;i++){
-    const d=document.createElement('span');
-    let cls='pip';
+    const d=document.createElement('span'); let cls='pip';
     if(results[i]===true) cls+=' correct filled';
     else if(results[i]===false) cls+=' wrong filled';
     else if(i===index) cls+=' current';
-    d.className=cls;
-    els.pipsRow.appendChild(d);
+    d.className=cls; els.pipsRow.appendChild(d);
   }
 }
 
 function setRoundUI(enabled){
-  els.input.disabled=!enabled;
-  els.submit.disabled=!enabled;
-  els.skip.disabled=!enabled;
-  els.zoomIn.disabled=enabled;
-  els.zoomOut.disabled=enabled;
-  els.zoomReset.disabled=enabled;
-  els.mapFrame.classList.toggle('locked', enabled);
-  els.mapHint.textContent=enabled ? 'Guess to unlock pan & zoom' : 'Scroll or pinch to zoom, drag to pan';
+  els.input.disabled=!enabled; els.submit.disabled=!enabled; els.skip.disabled=!enabled;
+  els.zoomIn.disabled=enabled; els.zoomOut.disabled=enabled; els.zoomReset.disabled=enabled;
+  els.mapFrame.classList.toggle('locked',enabled);
+  els.mapHint.textContent=enabled?'Guess to unlock pan & zoom':'Scroll or pinch to zoom, drag to pan';
   zoomLocked=enabled;
   if(leafletMap){
-    if(enabled){
-      leafletMap.dragging.disable();
-      leafletMap.scrollWheelZoom.disable();
-      leafletMap.touchZoom.disable();
-      leafletMap.doubleClickZoom.disable();
-      leafletMap.boxZoom.disable();
-      leafletMap.keyboard.disable();
-    }else{
-      leafletMap.dragging.enable();
-      leafletMap.scrollWheelZoom.enable();
-      leafletMap.touchZoom.enable();
-      leafletMap.doubleClickZoom.enable();
-      leafletMap.boxZoom.enable();
-      leafletMap.keyboard.enable();
-    }
+    if(enabled){ leafletMap.dragging.disable(); leafletMap.scrollWheelZoom.disable(); leafletMap.touchZoom.disable(); leafletMap.doubleClickZoom.disable(); }
+    else{ leafletMap.dragging.enable(); leafletMap.scrollWheelZoom.enable(); leafletMap.touchZoom.enable(); leafletMap.doubleClickZoom.enable(); }
   }
 }
 
-function loadPuzzle(puzzle, index, resultsSoFar){
+function loadPuzzle(puzzle,index,resultsSoFar){
   current=puzzle; currentIndex=index; answered=false;
-  els.feedback.classList.remove('show');
-  els.input.value='';
-  hideSuggestions();
-  clearRevealOutline();
-  const cfg=LEVELS[puzzle.level-1];
-  els.levelLabel.innerHTML='Puzzle <b>'+(index+1)+'</b> of 5 · <b>'+cfg.label+'</b>';
-  renderPips(index, resultsSoFar||[]);
-  setRoundUI(true);
-  placePin();
-  frameCurrentPoint(puzzle, false);
-  els.input.focus();
+  els.feedback.classList.remove('show'); els.input.value=''; hideSuggestions(); clearRevealOutline();
+  els.levelLabel.innerHTML='Puzzle <b>'+(index+1)+'</b> of 5 · <b>'+LEVELS[puzzle.level-1].label+'</b>';
+  renderPips(index,resultsSoFar||[]);
+  setRoundUI(true); placePin(); frameCurrentPoint(puzzle,false); els.input.focus();
 }
 
-function showAnswer(result, guessedCountry){
-  answered=true;
-  setRoundUI(false);
-  els.feedback.classList.add('show');
+function showAnswer(result,guessedCountry){
+  answered=true; setRoundUI(false); els.feedback.classList.add('show');
   const isCorrect=(result==='correct');
   els.stamp.className='stamp '+(isCorrect?'correct':'wrong');
   els.stamp.textContent=isCorrect?'Correct':'Missed';
   els.revealName.textContent=current.country.name;
-  els.guessLine.textContent=(!isCorrect && guessedCountry)
-    ? 'You guessed '+guessedCountry.name+' (red) — the answer was '+current.country.name+' (green).'
-    : '';
-  if(!isCorrect && guessedCountry){
-    const edgeKm=nearestEdgeKm(current.lat, current.lon, guessedCountry);
-    els.revealNote.textContent = edgeKm<3
-      ? 'This point sat almost exactly on '+guessedCountry.name+'’s border.'
-      : 'This point sat roughly '+Math.round(edgeKm)+' km from '+guessedCountry.name+'’s nearest border.';
-  }else{
-    els.revealNote.textContent='';
-  }
-  const guessFeature=(!isCorrect && guessedCountry) ? guessedCountry.feature : null;
-  showRevealOutline(current.country.feature, guessFeature);
-  if(guessFeature) frameToFitBoth(guessFeature);
-  else leafletMap.fitBounds(correctLayer.getBounds(), {padding:[20,20], maxZoom:10});
-
+  els.guessLine.textContent=(!isCorrect&&guessedCountry)
+    ?'You guessed '+guessedCountry.name+' (red) — the answer was '+current.country.name+' (green).':'';
+  if(!isCorrect&&guessedCountry){
+    const edgeKm=nearestEdgeKm(current.lat,current.lon,guessedCountry);
+    els.revealNote.textContent=edgeKm<3
+      ?'This point sat almost exactly on '+guessedCountry.name+'’s border.'
+      :'This point sat roughly '+Math.round(edgeKm)+' km from '+guessedCountry.name+'’s nearest border.';
+  }else{ els.revealNote.textContent=''; }
+  showRevealOutline(current.country.feature,(!isCorrect&&guessedCountry)?guessedCountry.feature:null);
+  frameToFitBoth();
   if(mode==='daily'){
-    const state=recordDailyAnswer(currentIndex, isCorrect);
-    renderPips(currentIndex, state.results);
-    els.streak.textContent=String(state.streak||0);
-    els.nextBtn.textContent = (currentIndex<4) ? 'Next puzzle →' : 'See today’s results →';
-  }else{
-    els.nextBtn.textContent='Next round →';
-  }
+    const state=recordDailyAnswer(currentIndex,isCorrect);
+    renderPips(currentIndex,state.results); els.streak.textContent=String(state.streak||0);
+    els.nextBtn.textContent=(currentIndex<4)?'Next puzzle →':'See today’s results →';
+  }else{ els.nextBtn.textContent='Next round →'; }
 }
 
 function submitGuess(){
-  if(answered) return;
-  const val=els.input.value;
-  if(!val.trim()) return;
-  hideSuggestions();
+  if(answered) return; const val=els.input.value; if(!val.trim()) return; hideSuggestions();
   const guessNorm=normalize(val);
-  const guessedCountry=countryPool.find(c=>normalize(c.name)===guessNorm) || null;
-  const correct=!!guessedCountry && guessedCountry.name===current.country.name;
-  showAnswer(correct?'correct':'missed', guessedCountry);
+  const guessedCountry=countryPool.find(c=>normalize(c.name)===guessNorm)||null;
+  const correct=!!guessedCountry&&guessedCountry.name===current.country.name;
+  showAnswer(correct?'correct':'missed',guessedCountry);
 }
 
-els.submit.addEventListener('click', submitGuess);
-els.input.addEventListener('input', ()=>{ renderSuggestions(els.input.value); });
-els.input.addEventListener('keydown', e=>{
-  if(e.key==='ArrowDown' && els.suggestions.classList.contains('show')){
-    e.preventDefault(); moveSuggestion(1);
-  }else if(e.key==='ArrowUp' && els.suggestions.classList.contains('show')){
-    e.preventDefault(); moveSuggestion(-1);
-  }else if(e.key==='Escape'){
-    hideSuggestions();
-  }else if(e.key==='Enter'){
-    if(activeSuggestion>=0 && suggestionItems[activeSuggestion]){
-      selectSuggestion(suggestionItems[activeSuggestion]);
-    }else{
-      submitGuess();
-    }
-  }
+els.submit.addEventListener('click',submitGuess);
+els.input.addEventListener('input',()=>renderSuggestions(els.input.value));
+els.input.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'&&els.suggestions.classList.contains('show')){ e.preventDefault(); moveSuggestion(1); }
+  else if(e.key==='ArrowUp'&&els.suggestions.classList.contains('show')){ e.preventDefault(); moveSuggestion(-1); }
+  else if(e.key==='Escape') hideSuggestions();
+  else if(e.key==='Enter'){ if(activeSuggestion>=0&&suggestionItems[activeSuggestion]) selectSuggestion(suggestionItems[activeSuggestion]); else submitGuess(); }
 });
-els.input.addEventListener('blur', ()=>{ setTimeout(hideSuggestions, 120); });
-els.skip.addEventListener('click', ()=>{ if(!answered) showAnswer('missed', null); });
+els.input.addEventListener('blur',()=>setTimeout(hideSuggestions,120));
+els.skip.addEventListener('click',()=>{ if(!answered) showAnswer('missed',null); });
 
-els.nextBtn.addEventListener('click', ()=>{
-  if(mode==='daily'){
-    if(currentIndex<4){
-      loadPuzzle(dailyPuzzles[currentIndex+1], currentIndex+1, loadState().results);
-    }else{
-      showDailySummary();
-    }
-  }else{
-    loadFreeplayPuzzle();
-  }
+els.nextBtn.addEventListener('click',()=>{
+  if(mode==='daily'){ if(currentIndex<4) loadPuzzle(dailyPuzzles[currentIndex+1],currentIndex+1,loadState().results); else showDailySummary(); }
+  else loadFreeplayPuzzle();
 });
 
 function showDailySummary(){
-  const state=loadState();
-  const pNum=puzzleNumber();
-  const results=state.results||[];
-  els.puzzleView.style.display='none';
-  els.pipsWrap.style.display='none';
-  els.mapSection.style.display='none';
+  const state=loadState(); const pNum=puzzleNumber(); const results=state.results||[];
+  els.puzzleView.style.display='none'; els.pipsWrap.style.display='none'; els.mapSection.style.display='none';
   els.summaryView.classList.add('show');
   const correctCount=results.filter(r=>r===true).length;
-  els.summaryScore.textContent=correctCount+' / 5';
-  els.summaryPips.innerHTML='';
-  results.forEach(r=>{
-    const s=document.createElement('span');
-    s.className=r?'correct':'wrong';
-    s.textContent=r?'✓':'✗';
-    els.summaryPips.appendChild(s);
-  });
+  els.summaryScore.textContent=correctCount+' / 5'; els.summaryPips.innerHTML='';
+  results.forEach(r=>{ const s=document.createElement('span'); s.className=r?'correct':'wrong'; s.textContent=r?'✓':'✗'; els.summaryPips.appendChild(s); });
   els.summarySub.textContent='Puzzle #'+pNum+' · '+formatDate()+(state.streak?' · perfect streak '+state.streak:'');
   startCountdown();
 }
-
 function startCountdown(){
-  const tick=()=>{
-    const ms=msUntilNextUTCMidnight();
-    els.countdown.innerHTML='Next set in <b>'+formatCountdown(ms)+'</b>';
-    if(ms<=0){ location.reload(); }
-  };
-  tick();
-  setInterval(tick, 1000);
+  const tick=()=>{ const ms=msUntilNextUTCMidnight(); els.countdown.innerHTML='Next set in <b>'+formatCountdown(ms)+'</b>'; if(ms<=0) location.reload(); };
+  tick(); setInterval(tick,1000);
 }
 
-els.share.addEventListener('click', async()=>{
-  const state=loadState();
-  const pNum=puzzleNumber();
-  const results=state.results||[];
+els.share.addEventListener('click',async()=>{
+  const state=loadState(); const pNum=puzzleNumber(); const results=state.results||[];
   const pips=results.map(r=>r?'🟩':'🟥').join('');
   const text='guess da country #'+pNum+'  '+pips+(state.streak?' · streak '+state.streak:'');
-  try{
-    if(navigator.share){ await navigator.share({text}); }
-    else{
-      await navigator.clipboard.writeText(text);
-      els.share.textContent='Copied!';
-      setTimeout(()=>{ els.share.textContent='Share result'; }, 1500);
-    }
-  }catch(e){}
+  try{ if(navigator.share) await navigator.share({text}); else{ await navigator.clipboard.writeText(text); els.share.textContent='Copied!'; setTimeout(()=>els.share.textContent='Share result',1500); } }catch(e){}
 });
 
 function loadFreeplayPuzzle(){
   const country=countryPool[Math.floor(Math.random()*countryPool.length)];
   const level=1+Math.floor(Math.random()*5);
   const rng=mulberry32((Math.random()*4294967296)>>>0);
-  const puzzle=pickPuzzlePoint(country, level, rng, coastIndex);
-  loadPuzzle(puzzle, 0, []);
+  loadPuzzle(pickPuzzlePoint(country,level,rng),0,[]);
   els.pipsWrap.style.display='none';
 }
 
-els.practice.addEventListener('click', ()=>{
-  mode='freeplay';
-  els.modeLine.textContent='Practice';
-  els.freeplayBanner.classList.add('show');
-  els.summaryView.classList.remove('show');
-  els.puzzleView.style.display='';
-  els.mapSection.style.display='';
+els.practice.addEventListener('click',()=>{
+  mode='freeplay'; els.modeLine.textContent='Practice'; els.freeplayBanner.classList.add('show');
+  els.summaryView.classList.remove('show'); els.puzzleView.style.display=''; els.mapSection.style.display='';
   loadFreeplayPuzzle();
 });
 
-els.zoomIn.addEventListener('click', ()=>{ if(!zoomLocked && leafletMap) leafletMap.setZoom(leafletMap.getZoom()+1); });
-els.zoomOut.addEventListener('click', ()=>{ if(!zoomLocked && leafletMap) leafletMap.setZoom(leafletMap.getZoom()-1); });
-els.zoomReset.addEventListener('click', ()=>{ if(!zoomLocked && current) frameCurrentPoint(current, true); });
+els.zoomIn.addEventListener('click',()=>{ if(!zoomLocked&&leafletMap) leafletMap.setZoom(leafletMap.getZoom()+1); });
+els.zoomOut.addEventListener('click',()=>{ if(!zoomLocked&&leafletMap) leafletMap.setZoom(leafletMap.getZoom()-1); });
+els.zoomReset.addEventListener('click',()=>{ if(!zoomLocked&&current) frameCurrentPoint(current,true); });
 
 function startDailyRound(){
-  const pNum=puzzleNumber();
-  const state=ensureDailyState(pNum);
-  dailyPuzzles=buildDailyPuzzles(pNum, state);
+  const pNum=puzzleNumber(); const state=ensureDailyState(pNum);
+  dailyPuzzles=buildDailyPuzzles(pNum,state);
   els.dateLine.textContent='Puzzle #'+pNum+' · '+formatDate();
   els.streak.textContent=String(state.streak||0);
-
-  if((state.dayIndex||0)>=5){
-    showDailySummary();
-    return;
-  }
-  els.puzzleView.style.display='';
-  els.pipsWrap.style.display='';
-  loadPuzzle(dailyPuzzles[state.dayIndex||0], state.dayIndex||0, state.results||[]);
+  if((state.dayIndex||0)>=5){ showDailySummary(); return; }
+  els.puzzleView.style.display=''; els.pipsWrap.style.display='';
+  loadPuzzle(dailyPuzzles[state.dayIndex||0],state.dayIndex||0,state.results||[]);
 }
 
 async function init(){
   try{
     const world=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json').then(r=>r.json());
-    const countries=topojson.feature(world, world.objects.countries);
-
+    const countries=topojson.feature(world,world.objects.countries);
     const arcInfo=computeArcInfo(world);
-    coastIndex=buildCoastIndex(arcInfo);
-    countryPool=buildCountryPool(world, countries, arcInfo);
+    countryPool=buildCountryPool(world,countries,arcInfo);
     countryByName=new Map(countryPool.map(c=>[c.name,c]));
     buildCountryNames();
 
-    leafletMap=L.map('map', {
-      center:[20,0],
-      zoom:2,
-      zoomControl:false,
-      attributionControl:true,
-      worldCopyJump:true,
-      minZoom:2,
-      maxZoom:17
-    });
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom:17,
-      attribution:'Imagery &copy; <a href="https://www.esri.com/">Esri</a>'
+    leafletMap=L.map('map',{center:[20,0],zoom:2,zoomControl:false,attributionControl:true,worldCopyJump:true,minZoom:2,maxZoom:17});
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',{
+      maxZoom:19, subdomains:'abcd',
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(leafletMap);
 
-    // Start locked
-    leafletMap.dragging.disable();
-    leafletMap.scrollWheelZoom.disable();
-    leafletMap.touchZoom.disable();
-    leafletMap.doubleClickZoom.disable();
-    leafletMap.boxZoom.disable();
-    leafletMap.keyboard.disable();
+    leafletMap.dragging.disable(); leafletMap.scrollWheelZoom.disable();
+    leafletMap.touchZoom.disable(); leafletMap.doubleClickZoom.disable();
 
     startDailyRound();
   }catch(err){
-    console.error('Failed to load:', err);
-    document.getElementById('map').textContent='Could not load map data — check your internet connection and reload.';
+    console.error('Failed to load:',err);
+    document.getElementById('map').textContent='Could not load map data — check your connection and reload.';
   }
 }
 init();
