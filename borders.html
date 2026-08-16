@@ -285,7 +285,7 @@ function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); return r?J
 function saveState(s){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)); }catch(e){} }
 
 // ---------- Geometry ----------
-let countryPool=[], countryByName=new Map();
+let countryPool=[], answerPool=[], countryByName=new Map();
 
 function decodeArc(arc,transform){
   let x=0,y=0; const pts=[];
@@ -334,7 +334,6 @@ function buildCountryPool(world,countries,arcInfo){
     const feature=countries.features[i];
     if(!feature||!feature.geometry) continue;
     const areaKm2=d3.geoArea(feature)*R_KM*R_KM;
-    if(areaKm2<MIN_AREA_KM2) continue;
     let rawPolys,geoPolys;
     if(g.type==='Polygon'){ rawPolys=[g.arcs]; geoPolys=[feature.geometry.coordinates]; }
     else if(g.type==='MultiPolygon'){ rawPolys=g.arcs; geoPolys=feature.geometry.coordinates; }
@@ -398,8 +397,8 @@ function pickPuzzlePoint(country,level,rng){
 // ---------- Daily puzzle ----------
 function pickDailyCountryNames(pNum,playedNames){
   const played=new Set(playedNames||[]);
-  let candidates=countryPool.filter(c=>!played.has(c.name));
-  if(candidates.length<5) candidates=countryPool.slice();
+  let candidates=answerPool.filter(c=>!played.has(c.name));
+  if(candidates.length<5) candidates=answerPool.slice();
   const rng=mulberry32(hashSeed(pNum,999983));
   const arr=candidates.slice();
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
@@ -630,7 +629,7 @@ els.share.addEventListener('click',async()=>{
 });
 
 function loadFreeplayPuzzle(){
-  const country=countryPool[Math.floor(Math.random()*countryPool.length)];
+  const country=answerPool[Math.floor(Math.random()*answerPool.length)];
   const level=1+Math.floor(Math.random()*5);
   const rng=mulberry32((Math.random()*4294967296)>>>0);
   loadPuzzle(pickPuzzlePoint(country,level,rng),0,[]);
@@ -663,6 +662,7 @@ async function init(){
     const countries=topojson.feature(world,world.objects.countries);
     const arcInfo=computeArcInfo(world);
     countryPool=buildCountryPool(world,countries,arcInfo);
+    answerPool=countryPool.filter(c=>c.areaKm2>=MIN_AREA_KM2);
     countryByName=new Map(countryPool.map(c=>[c.name,c]));
     buildCountryNames();
 
