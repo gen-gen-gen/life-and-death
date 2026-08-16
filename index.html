@@ -520,11 +520,15 @@ function puzzleNumber(){
 }
 function todaysCeleb(){
   const state=loadState();
-  const played=new Set([...(state.playedNames||[]),...ORIGINAL_NAMES]);
-  const pool=celebs.filter(c=>!played.has(c.name));
-  if(!pool.length) return celebs[((puzzleNumber()-1)%celebs.length+celebs.length)%celebs.length];
-  const idx=((puzzleNumber()-1)%pool.length+pool.length)%pool.length;
-  return pool[idx];
+  const pNum=puzzleNumber();
+  // If today's celeb was already locked in (round started or completed today), return the same one
+  if(state.todayPNum===pNum && state.todayCeleb){
+    return celebs.find(c=>c.name===state.todayCeleb) || celebs[20];
+  }
+  // New day: pick the first new celeb (indices 20+) that hasn't been played yet
+  const played=new Set(state.playedNames||[]);
+  const newPool=celebs.slice(20).filter(c=>!played.has(c.name));
+  return newPool.length ? newPool[0] : celebs[20];
 }
 function msUntilNextUTCMidnight(){
   const n=new Date();
@@ -742,8 +746,20 @@ function setRoundUI(enabled){
 }
 
 function startDailyRound(){
-  const state=loadState();
   const pNum=puzzleNumber();
+  let state=loadState();
+
+  // Lock in today's celeb before anything else — prevents the pool shrinking mid-day
+  // from landing on a different person if the page is refreshed after a round completes
+  if(state.todayPNum!==pNum){
+    const played=new Set(state.playedNames||[]);
+    const newPool=celebs.slice(20).filter(c=>!played.has(c.name));
+    const pick=newPool.length ? newPool[0] : celebs[20];
+    state.todayPNum=pNum;
+    state.todayCeleb=pick.name;
+    saveState(state);
+  }
+
   current=todaysCeleb();
   els.dateLine.textContent='Puzzle #'+pNum+' · '+formatDate();
   els.streak.textContent=String(state.streak||0);
@@ -752,8 +768,8 @@ function startDailyRound(){
   resetHintButtons();
   answered=false;
 
-  if(state.lastDay===pNum && state.lastCeleb===current.name){
-    // Already played today — restore final state
+  if(state.lastDay===pNum){
+    // Round already completed today — restore final state
     placePinsAndFrame();
     showResult(state.lastResult, state.lastHintsUsed||0, /*persist*/false);
     return;

@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root{
     --paper:#F1E6CB;
@@ -112,14 +113,15 @@
     border:1px solid var(--ink-soft);
     box-shadow:0 0 0 4px var(--paper), 0 0 0 5px var(--ink-soft);
     margin-bottom:10px;
-    background:var(--paper-deep);
     overflow:hidden;
     position:relative;
   }
-  svg.map{ display:block; width:100%; height:auto; cursor:grab; touch-action:none; }
-  svg.map:active{ cursor:grabbing; }
-  .map-frame.locked svg.map{ cursor:default; touch-action:pan-y; }
-  .map-frame.locked svg.map:active{ cursor:default; }
+  #map{
+    display:block;
+    width:100%;
+    height:380px;
+  }
+  .map-frame.locked #map{ cursor:default; }
   .map-hint{
     text-align:center;
     font-size:11px;
@@ -144,7 +146,7 @@
     border:1px solid var(--ink-soft);
     max-height:220px;
     overflow-y:auto;
-    z-index:20;
+    z-index:1000;
     box-shadow:0 8px 18px rgba(43,42,40,0.22);
   }
   .suggestions.show{ display:block; }
@@ -296,12 +298,26 @@
     display:none;
   }
   .freeplay-banner.show{ display:block; }
+
+  /* Leaflet overrides to match our design */
+  .leaflet-container{ font-family:'Lora', serif; }
+  .leaflet-control-attribution{
+    font-size:9px;
+    background:rgba(241,230,203,0.75) !important;
+    color:var(--ink-soft) !important;
+  }
+  .leaflet-control-attribution a{ color:var(--ink-soft) !important; }
+
+  /* Custom pin icon */
+  .game-pin svg{ display:block; }
+
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
   @media (max-width:480px){
     .sheet{ padding:22px 18px 28px; }
     h1{ font-size:26px; }
     .stamp{ width:60px; height:60px; font-size:10px; top:0; right:0; }
     .reveal-name, .reveal-note{ padding-right:0; }
+    #map{ height:280px; }
   }
 </style>
 </head>
@@ -327,26 +343,12 @@
 
   <div id="map-section">
     <div class="map-frame" id="map-frame">
-      <svg id="map" class="map" viewBox="0 0 680 420" role="img" aria-label="Zoomable world map with a single unlabeled point">
-        <rect x="0" y="0" width="680" height="420" fill="var(--paper)"></rect>
-        <g id="zoom-layer">
-          <g id="world-west"></g>
-          <path id="land" fill="var(--sea)" fill-rule="evenodd" stroke="var(--ink-soft)" stroke-width="0.5" vector-effect="non-scaling-stroke"></path>
-          <path id="reveal-outline" fill="var(--green)" fill-opacity="0.45" fill-rule="evenodd" stroke="var(--green)" stroke-width="1.6" vector-effect="non-scaling-stroke" opacity="0"></path>
-          <path id="reveal-outline-guess" fill="var(--red)" fill-opacity="0.45" fill-rule="evenodd" stroke="var(--red)" stroke-width="1.6" vector-effect="non-scaling-stroke" opacity="0"></path>
-          <g id="world-east"></g>
-          <g id="pin-mark">
-            <circle class="pulse" r="10" fill="none" stroke="var(--accent)" stroke-width="1.4" opacity="0.55"></circle>
-            <g class="marker-inner"></g>
-          </g>
-        </g>
-        <text id="loading-text" x="340" y="210" text-anchor="middle" font-family="'Lora', serif" font-size="13" fill="var(--ink-soft)">Unrolling the map…</text>
-      </svg>
+      <div id="map"></div>
     </div>
     <p class="map-hint" id="map-hint">Guess to unlock pan &amp; zoom</p>
     <div class="zoom-controls">
       <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
-      <button id="zoom-reset" type="button" aria-label="Reset view to the puzzle's starting zoom">Reset view</button>
+      <button id="zoom-reset" type="button" aria-label="Reset view">Reset view</button>
       <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
     </div>
   </div>
@@ -386,15 +388,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const svgNS='http://www.w3.org/2000/svg';
-const WIDTH=680, HEIGHT=420;
 const R_KM=6371;
 const STORAGE_KEY='terra-incognita:v1';
 const EPOCH_UTC=Date.UTC(2026,0,1);
 
-// Entries that are disputed zones, military bases, uninhabited reefs/glaciers,
-// or dependent territories of another sovereign state — excluded from the answer pool.
 const EXCLUDE_NAMES=new Set([
   "Antarctica","Vatican","Coral Sea Is.","Bajo Nuevo Bank","Scarborough Reef","Serranilla Bank",
   "Ashmore and Cartier Is.","Clipperton I.","Spratly Is.","Cyprus U.N. Buffer Zone","Baikonur",
@@ -406,22 +405,17 @@ const EXCLUDE_NAMES=new Set([
   "St. Pierre and Miquelon","American Samoa","Guam","N. Mariana Is.","U.S. Minor Outlying Is.","Cook Is.",
   "Niue","Norfolk Island","Pitcairn Is.","N. Cyprus","W. Sahara","Somaliland"
 ]);
-const MIN_AREA_KM2=1000; // also drops micro-states too small for a meaningful zoom ramp (Monaco, Singapore, Malta, ...)
+const MIN_AREA_KM2=1000;
 
-// Difficulty no longer comes from raw zoom — the view always widens dynamically until real
-// coastline is visible (see computeSafeScale), so a puzzle is never a blank, unreasonable patch.
-// preferBorder: chance of sampling near a real shared land border (vs. a coastline) — the actual
-//               difficulty lever, since a border between look-alike neighbors is genuinely ambiguous.
-// tRange: mild inward jitter (fraction of border/coast→centroid line) so the pin isn't always
-//         sitting exactly on the sampled edge.
-// zoomFactor: fraction of the "safe" (coastline-guaranteed) zoom to actually use — 1.0 means
-//             zoom in exactly as tight as still safely shows the coastline; <1 backs off for more context.
+// Difficulty levels — tRange is how far toward the centroid (0=edge, 1=center).
+// Easy: pin deep inside the country (high t), wide view showing lots of context.
+// Hard: pin right on a political border (low t), tight zoom with little context.
 const LEVELS=[
-  {label:'Wide',        preferBorder:0.10, tRange:[0.10,0.22], zoomFactor:0.32},
-  {label:'Regional',    preferBorder:0.30, tRange:[0.07,0.16], zoomFactor:0.52},
-  {label:'Close',       preferBorder:0.50, tRange:[0.05,0.12], zoomFactor:0.72},
-  {label:'Tight',       preferBorder:0.70, tRange:[0.03,0.08], zoomFactor:0.90},
-  {label:'Point-blank', preferBorder:0.88, tRange:[0.01,0.04], zoomFactor:1.00}
+  {label:'Wide',        preferBorder:0.0,  tRange:[0.55,0.82], zoomFactor:0.22},
+  {label:'Regional',    preferBorder:0.15, tRange:[0.30,0.55], zoomFactor:0.40},
+  {label:'Close',       preferBorder:0.40, tRange:[0.12,0.30], zoomFactor:0.62},
+  {label:'Tight',       preferBorder:0.68, tRange:[0.03,0.12], zoomFactor:0.84},
+  {label:'Point-blank', preferBorder:0.90, tRange:[0.01,0.04], zoomFactor:1.00}
 ];
 
 function mulberry32(seed){
@@ -439,7 +433,7 @@ function hashSeed(a,b){
   return h;
 }
 function normalize(s){
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
 }
 
 // ---------- Daily / persistent state ----------
@@ -470,9 +464,8 @@ function loadState(){
 function saveState(s){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){} }
 
 // ---------- Geometry engine ----------
-let projection, pathGen, zoomBehavior, coastIndex;
+let coastIndex;
 let countryPool=[], countryByName=new Map();
-function geoXY(lat,lon){ return projection([lon,lat]); }
 
 function decodeArc(arc, transform){
   let x=0,y=0; const pts=[];
@@ -483,9 +476,6 @@ function decodeArc(arc, transform){
   return pts;
 }
 
-// Decode every arc once and tally how many country rings each arc participates in.
-// usage===1 means the arc borders open ocean only (coastline); usage>=2 means it's a shared
-// political border between two countries. Both buildCountryPool and buildCoastIndex reuse this.
 function computeArcInfo(world){
   const transform=world.transform;
   const decodedArcs=world.arcs.map(a=>decodeArc(a, transform));
@@ -498,10 +488,8 @@ function computeArcInfo(world){
   return {decodedArcs, arcUsage};
 }
 
-// Flat, grid-bucketed index of every coastline point on Earth (arcs touching open ocean only),
-// used to find how far a candidate puzzle point sits from any visible coastline — see nearestCoastKm.
 function buildCoastIndex(arcInfo){
-  const cellSize=2; // degrees
+  const cellSize=2;
   const grid=new Map();
   function addPoint(lon,lat){
     const key=Math.floor(lon/cellSize)+','+Math.floor(lat/cellSize);
@@ -547,8 +535,6 @@ function nearestCoastKm(lat, lon, coastIndex){
   return best===Infinity ? 20000 : best;
 }
 
-// Distance from a point to the nearest vertex of a specific country's own boundary — used to tell
-// a wrong guesser how far off they were from the country they actually guessed.
 function nearestEdgeKm(lat, lon, country){
   const pt=[lon,lat];
   let best=Infinity;
@@ -693,66 +679,76 @@ function recordDailyAnswer(index, correct){
   return state;
 }
 
-// ---------- Rendering ----------
-// The tightest zoom that still keeps the nearest coastline comfortably inside the frame,
-// at the puzzle point's own latitude (Mercator's ground-km-per-pixel varies with latitude).
-function computeSafeScale(lat, coastKm){
-  const k0=projection.scale();
-  const halfExtentPx=Math.min(WIDTH,HEIGHT)/2*0.55; // safety margin so the coast isn't right at the edge
-  const groundKmPerRadian=R_KM*Math.cos(lat*Math.PI/180);
-  const safeCoastKm=Math.max(coastKm, 0.5);
-  const scale=(halfExtentPx*groundKmPerRadian)/(k0*safeCoastKm);
-  return Math.min(Math.max(scale,1),70);
+// ---------- Leaflet map ----------
+let leafletMap=null;
+let pinMarker=null;
+let correctLayer=null;
+let guessLayer=null;
+let zoomLocked=true;
+
+// Convert coast distance → appropriate Leaflet zoom level, then apply zoomFactor
+function puzzleZoom(lat, coastKm, level){
+  // At Leaflet zoom z, half the map width (340 px of 680) covers:
+  //   340 * (40075 * cos(lat)) / (256 * 2^z) km
+  // Set that equal to coastKm / 0.55 (safety margin) → solve for z
+  const cosLat=Math.cos(Math.abs(lat)*Math.PI/180);
+  const safeZ=Math.log2(40075*cosLat*340/(256*Math.max(coastKm,0.5)*0.55));
+  // zoomFactor < 1 means zoom OUT → subtract log2(1/zf) = add log2(zf) (negative)
+  const z=safeZ+Math.log2(LEVELS[level-1].zoomFactor);
+  return Math.max(2, Math.min(15, z));
 }
+
 function frameCurrentPoint(puzzle, animate){
-  const xy=geoXY(puzzle.lat, puzzle.lon);
-  const safeScale=computeSafeScale(puzzle.lat, puzzle.coastKm);
-  const scale=Math.max(1, safeScale*LEVELS[puzzle.level-1].zoomFactor);
-  const t=d3.zoomIdentity.translate(WIDTH/2-scale*xy[0], HEIGHT/2-scale*xy[1]).scale(scale);
-  const svg=d3.select('#map');
-  if(animate) svg.transition().duration(700).call(zoomBehavior.transform, t);
-  else svg.call(zoomBehavior.transform, t);
-}
-function placePin(){
-  const xy=geoXY(current.lat, current.lon);
-  const g=document.getElementById('pin-mark');
-  g.setAttribute('transform','translate('+xy[0]+','+xy[1]+')');
-  const inner=g.querySelector('.marker-inner');
-  inner.innerHTML='';
-  const pin=document.createElementNS(svgNS,'path');
-  pin.setAttribute('d','M0 0 C -9 -11, -9 -23, 0 -25 C 9 -23, 9 -11, 0 0 Z');
-  pin.setAttribute('fill','var(--accent)');
-  pin.setAttribute('stroke','var(--ink)');
-  pin.setAttribute('stroke-width','0.9');
-  inner.appendChild(pin);
-  const hole=document.createElementNS(svgNS,'circle');
-  hole.setAttribute('cx',0); hole.setAttribute('cy',-14); hole.setAttribute('r',3.2);
-  hole.setAttribute('fill','var(--paper)');
-  inner.appendChild(hole);
-}
-function clearRevealOutline(){
-  ['reveal-outline','reveal-outline-guess'].forEach(id=>{
-    const p=document.getElementById(id);
-    p.setAttribute('d','');
-    p.setAttribute('opacity','0');
-  });
-}
-function showRevealOutline(correctFeature, guessFeature){
-  const correctPath=document.getElementById('reveal-outline');
-  correctPath.setAttribute('d', pathGen(correctFeature));
-  correctPath.setAttribute('opacity','1');
-  const guessPath=document.getElementById('reveal-outline-guess');
-  if(guessFeature){
-    guessPath.setAttribute('d', pathGen(guessFeature));
-    guessPath.setAttribute('opacity','1');
+  const z=puzzleZoom(puzzle.lat, puzzle.coastKm, puzzle.level);
+  if(animate){
+    leafletMap.flyTo([puzzle.lat, puzzle.lon], z, {duration:0.7, easeLinearity:0.5});
   }else{
-    guessPath.setAttribute('d','');
-    guessPath.setAttribute('opacity','0');
+    leafletMap.setView([puzzle.lat, puzzle.lon], z, {animate:false});
   }
 }
 
+const PIN_HTML=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="26" viewBox="-9 -25 18 26">
+  <path d="M0 0 C -9 -11, -9 -23, 0 -25 C 9 -23, 9 -11, 0 0 Z" fill="#28596B" stroke="#2B2A28" stroke-width="1"/>
+  <circle cx="0" cy="-14" r="3.2" fill="#F1E6CB"/>
+</svg>`;
+
+function placePin(){
+  if(pinMarker){ pinMarker.remove(); pinMarker=null; }
+  const icon=L.divIcon({
+    html:PIN_HTML,
+    className:'game-pin',
+    iconSize:[18,26],
+    iconAnchor:[9,26]
+  });
+  pinMarker=L.marker([current.lat, current.lon], {icon, interactive:false, zIndexOffset:1000}).addTo(leafletMap);
+}
+
+function clearRevealOutline(){
+  if(correctLayer){ correctLayer.remove(); correctLayer=null; }
+  if(guessLayer){ guessLayer.remove(); guessLayer=null; }
+}
+
+function showRevealOutline(correctFeature, guessFeature){
+  clearRevealOutline();
+  correctLayer=L.geoJSON(correctFeature, {
+    style:{fillColor:'#3F6B4A', fillOpacity:0.38, color:'#3F6B4A', weight:2.5, opacity:0.9}
+  }).addTo(leafletMap);
+  if(guessFeature){
+    guessLayer=L.geoJSON(guessFeature, {
+      style:{fillColor:'#9C3B33', fillOpacity:0.32, color:'#9C3B33', weight:2, opacity:0.85}
+    }).addTo(leafletMap);
+  }
+}
+
+function frameToFitBoth(guessFeature){
+  if(!correctLayer) return;
+  let bounds=correctLayer.getBounds();
+  if(guessLayer) bounds=bounds.extend(guessLayer.getBounds());
+  leafletMap.fitBounds(bounds, {padding:[20,20], maxZoom:10});
+}
+
 // ---------- Game state ----------
-let mode='daily'; // 'daily' | 'freeplay'
+let mode='daily';
 let dailyPuzzles=[];
 let current=null;
 let currentIndex=0;
@@ -791,7 +787,6 @@ const els={
   zoomOut:document.getElementById('zoom-out'),
   zoomReset:document.getElementById('zoom-reset')
 };
-let zoomLocked=true;
 
 let countryNames=[];
 let suggestionItems=[];
@@ -865,14 +860,29 @@ function setRoundUI(enabled){
   els.input.disabled=!enabled;
   els.submit.disabled=!enabled;
   els.skip.disabled=!enabled;
-  // Zoom/pan stay locked while a round is active (enabled) so the puzzle's
-  // fixed view can't be escaped by scouting for coastline elsewhere.
   els.zoomIn.disabled=enabled;
   els.zoomOut.disabled=enabled;
   els.zoomReset.disabled=enabled;
   els.mapFrame.classList.toggle('locked', enabled);
   els.mapHint.textContent=enabled ? 'Guess to unlock pan & zoom' : 'Scroll or pinch to zoom, drag to pan';
-  if(zoomBehavior) zoomLocked=enabled;
+  zoomLocked=enabled;
+  if(leafletMap){
+    if(enabled){
+      leafletMap.dragging.disable();
+      leafletMap.scrollWheelZoom.disable();
+      leafletMap.touchZoom.disable();
+      leafletMap.doubleClickZoom.disable();
+      leafletMap.boxZoom.disable();
+      leafletMap.keyboard.disable();
+    }else{
+      leafletMap.dragging.enable();
+      leafletMap.scrollWheelZoom.enable();
+      leafletMap.touchZoom.enable();
+      leafletMap.doubleClickZoom.enable();
+      leafletMap.boxZoom.enable();
+      leafletMap.keyboard.enable();
+    }
+  }
 }
 
 function loadPuzzle(puzzle, index, resultsSoFar){
@@ -888,21 +898,6 @@ function loadPuzzle(puzzle, index, resultsSoFar){
   placePin();
   frameCurrentPoint(puzzle, false);
   els.input.focus();
-}
-
-function frameToFitBoth(guessFeature){
-  const b1=pathGen.bounds(current.country.feature);
-  const b2=pathGen.bounds(guessFeature);
-  const minX=Math.min(b1[0][0],b2[0][0]), minY=Math.min(b1[0][1],b2[0][1]);
-  const maxX=Math.max(b1[1][0],b2[1][0]), maxY=Math.max(b1[1][1],b2[1][1]);
-  const spanX=Math.max(maxX-minX,1), spanY=Math.max(maxY-minY,1);
-  const pad=30;
-  const fitScale=Math.min(WIDTH/(spanX+pad*2), HEIGHT/(spanY+pad*2));
-  const currentScale=d3.zoomTransform(document.getElementById('map')).k;
-  const scale=Math.max(1, Math.min(fitScale, currentScale)); // never zoom in past where the round started
-  const cx=(minX+maxX)/2, cy=(minY+maxY)/2;
-  const t=d3.zoomIdentity.translate(WIDTH/2-scale*cx, HEIGHT/2-scale*cy).scale(scale);
-  d3.select('#map').transition().duration(700).call(zoomBehavior.transform, t);
 }
 
 function showAnswer(result, guessedCountry){
@@ -927,6 +922,7 @@ function showAnswer(result, guessedCountry){
   const guessFeature=(!isCorrect && guessedCountry) ? guessedCountry.feature : null;
   showRevealOutline(current.country.feature, guessFeature);
   if(guessFeature) frameToFitBoth(guessFeature);
+  else leafletMap.fitBounds(correctLayer.getBounds(), {padding:[20,20], maxZoom:10});
 
   if(mode==='daily'){
     const state=recordDailyAnswer(currentIndex, isCorrect);
@@ -998,7 +994,7 @@ function showDailySummary(){
     s.textContent=r?'✓':'✗';
     els.summaryPips.appendChild(s);
   });
-  els.summarySub.textContent='Puzzle #'+pNum+' · '+formatDate()+(state.streak?(' · perfect streak '+state.streak):'');
+  els.summarySub.textContent='Puzzle #'+pNum+' · '+formatDate()+(state.streak?' · perfect streak '+state.streak:'');
   startCountdown();
 }
 
@@ -1017,7 +1013,7 @@ els.share.addEventListener('click', async()=>{
   const pNum=puzzleNumber();
   const results=state.results||[];
   const pips=results.map(r=>r?'🟩':'🟥').join('');
-  const text='guess da country #'+pNum+'  '+pips+(state.streak?(' · streak '+state.streak):'');
+  const text='guess da country #'+pNum+'  '+pips+(state.streak?' · streak '+state.streak:'');
   try{
     if(navigator.share){ await navigator.share({text}); }
     else{
@@ -1047,6 +1043,10 @@ els.practice.addEventListener('click', ()=>{
   loadFreeplayPuzzle();
 });
 
+els.zoomIn.addEventListener('click', ()=>{ if(!zoomLocked && leafletMap) leafletMap.setZoom(leafletMap.getZoom()+1); });
+els.zoomOut.addEventListener('click', ()=>{ if(!zoomLocked && leafletMap) leafletMap.setZoom(leafletMap.getZoom()-1); });
+els.zoomReset.addEventListener('click', ()=>{ if(!zoomLocked && current) frameCurrentPoint(current, true); });
+
 function startDailyRound(){
   const pNum=puzzleNumber();
   const state=ensureDailyState(pNum);
@@ -1065,32 +1065,8 @@ function startDailyRound(){
 
 async function init(){
   try{
-    const [world, worldLand]=await Promise.all([
-      fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json').then(r=>r.json()),
-      fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-10m.json').then(r=>r.json())
-    ]);
+    const world=await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-10m.json').then(r=>r.json());
     const countries=topojson.feature(world, world.objects.countries);
-    const land=topojson.feature(worldLand, worldLand.objects.land);
-
-    projection=d3.geoMercator().fitSize([WIDTH,HEIGHT], countries);
-    pathGen=d3.geoPath().projection(projection);
-    document.getElementById('land').setAttribute('d', pathGen(land));
-    document.getElementById('loading-text').remove();
-
-    // The antimeridian (e.g. through Fiji) gets clipped to a straight synthetic edge by the
-    // projection. Rather than exclude puzzles near it, tile a west/east copy of the whole map
-    // so panning/zooming near that seam shows a seamless continuation instead of a hard cutoff.
-    const worldPixelWidth=2*Math.PI*projection.scale();
-    ['land','reveal-outline','reveal-outline-guess'].forEach(id=>{
-      ['world-west','world-east'].forEach(groupId=>{
-        const use=document.createElementNS(svgNS,'use');
-        use.setAttribute('href','#'+id);
-        use.setAttributeNS('http://www.w3.org/1999/xlink','href','#'+id);
-        const dx=groupId==='world-west' ? -worldPixelWidth : worldPixelWidth;
-        use.setAttribute('transform','translate('+dx+',0)');
-        document.getElementById(groupId).appendChild(use);
-      });
-    });
 
     const arcInfo=computeArcInfo(world);
     coastIndex=buildCoastIndex(arcInfo);
@@ -1098,27 +1074,33 @@ async function init(){
     countryByName=new Map(countryPool.map(c=>[c.name,c]));
     buildCountryNames();
 
-    const svg=d3.select('#map');
-    const zoomLayer=d3.select('#zoom-layer');
-    zoomBehavior=d3.zoom()
-      .scaleExtent([1,300])
-      .filter((event)=> !zoomLocked && (!event.ctrlKey || event.type==='wheel') && !event.button)
-      .on('zoom',(event)=>{
-        zoomLayer.attr('transform', event.transform);
-        const k=event.transform.k;
-        document.querySelector('#pin-mark .marker-inner').setAttribute('transform','scale('+(1/k)+')');
-        document.querySelector('#pin-mark .pulse').setAttribute('transform','scale('+(1/k)+')');
-      });
-    svg.call(zoomBehavior);
+    leafletMap=L.map('map', {
+      center:[20,0],
+      zoom:2,
+      zoomControl:false,
+      attributionControl:true,
+      worldCopyJump:true,
+      minZoom:2,
+      maxZoom:17
+    });
 
-    els.zoomIn.addEventListener('click',()=>{ if(!zoomLocked) svg.transition().duration(300).call(zoomBehavior.scaleBy,1.6); });
-    els.zoomOut.addEventListener('click',()=>{ if(!zoomLocked) svg.transition().duration(300).call(zoomBehavior.scaleBy,0.625); });
-    els.zoomReset.addEventListener('click',()=>{ if(!zoomLocked && current) frameCurrentPoint(current, true); });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom:17,
+      attribution:'Imagery &copy; <a href="https://www.esri.com/">Esri</a>'
+    }).addTo(leafletMap);
+
+    // Start locked
+    leafletMap.dragging.disable();
+    leafletMap.scrollWheelZoom.disable();
+    leafletMap.touchZoom.disable();
+    leafletMap.doubleClickZoom.disable();
+    leafletMap.boxZoom.disable();
+    leafletMap.keyboard.disable();
 
     startDailyRound();
   }catch(err){
-    document.getElementById('loading-text').textContent='Could not load map data — check your internet connection and reload.';
-    console.error(err);
+    console.error('Failed to load:', err);
+    document.getElementById('map').textContent='Could not load map data — check your internet connection and reload.';
   }
 }
 init();
