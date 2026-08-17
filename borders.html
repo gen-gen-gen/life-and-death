@@ -229,7 +229,7 @@ const EXCLUDE_NAMES=new Set([
 // Higher threshold removes small/isolated islands that are near-impossible to identify
 // from satellite alone (no context within the frame). Keeps Iceland, Ireland, Sri Lanka,
 // Cuba, Taiwan, New Zealand — all of which have identifiable context within a 1200km frame.
-const MIN_AREA_KM2=30000;
+const MIN_AREA_KM2=500;
 
 // Difficulty is defined by two things moving together:
 //   tRange: how far from the edge toward the centroid (0=on the border/coast, 1=centroid)
@@ -397,12 +397,20 @@ function pickPuzzlePoint(country,level,rng){
 // ---------- Daily puzzle ----------
 function pickDailyCountryNames(pNum,playedNames){
   const played=new Set(playedNames||[]);
-  let candidates=answerPool.filter(c=>!played.has(c.name));
-  if(candidates.length<5) candidates=answerPool.slice();
+  const available=answerPool.filter(c=>!played.has(c.name));
+  // Levels 1-3 must be continental (has at least one land border) so the wide frame
+  // doesn't immediately reveal an island's outline. Levels 4-5 can be any country.
+  const contAvail=available.filter(c=>c.hasLandBorder);
+  const contPool=(contAvail.length>=3)?contAvail:answerPool.filter(c=>c.hasLandBorder);
+  const anyPool=(available.length>=5)?available:answerPool.slice();
   const rng=mulberry32(hashSeed(pNum,999983));
-  const arr=candidates.slice();
-  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
-  return arr.slice(0,5).map(c=>c.name);
+  function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  const cont=shuffle(contPool);
+  const picks=[];const used=new Set();
+  for(const c of cont){if(picks.length>=3)break;picks.push(c);used.add(c.name);}
+  const rest=shuffle(anyPool.filter(c=>!used.has(c.name)));
+  for(const c of rest){if(picks.length>=5)break;picks.push(c);}
+  return picks.map(c=>c.name);
 }
 function ensureDailyState(pNum){
   let state=loadState();
@@ -629,8 +637,9 @@ els.share.addEventListener('click',async()=>{
 });
 
 function loadFreeplayPuzzle(){
-  const country=answerPool[Math.floor(Math.random()*answerPool.length)];
   const level=1+Math.floor(Math.random()*5);
+  const pool=level<4?answerPool.filter(c=>c.hasLandBorder):answerPool;
+  const country=pool[Math.floor(Math.random()*pool.length)];
   const rng=mulberry32((Math.random()*4294967296)>>>0);
   loadPuzzle(pickPuzzlePoint(country,level,rng),0,[]);
   els.pipsWrap.style.display='none';
