@@ -449,8 +449,8 @@ let leafletMap=null, pinMarker=null, correctLayer=null, guessLayer=null, zoomLoc
 function puzzleZoom(lat,level){
   const cosLat=Math.cos(Math.abs(lat)*Math.PI/180);
   const widthKm=LEVELS[level-1].widthKm;
-  // 680px spans widthKm km: 2^z = 40075 * cosLat * 680 / (256 * widthKm)
-  const z=Math.log2(40075*cosLat*680/(256*widthKm));
+  const mapW=leafletMap.getContainer().offsetWidth||680;
+  const z=Math.log2(40075*cosLat*mapW/(256*widthKm));
   return Math.max(2,Math.min(15,z));
 }
 
